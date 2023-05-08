@@ -11,12 +11,15 @@ public class DiffLine {
 
 	private int mode;
 	private int position;
-	private String strOriginal;
-	private String strRevised;
+//	private String strOriginal;
+//	private String strRevised;
+	private List<String> strOriginal;
+	private List<String> strRevised;
 	private List<DiffChar> listDiffChar;
 
 	public DiffLine( int mode, int position,
-			String strOriginal, String strRevised ) {
+//			String strOriginal, String strRevised ) {
+			List<String> strOriginal, List<String> strRevised ) {
 		this.mode = mode;
 		this.position = position;
 		this.strOriginal = strOriginal;
@@ -41,11 +44,19 @@ public class DiffLine {
 		return this.position;
 	}
 
-	public String getOriginal() {
+//	public String getOriginal() {
+//		return this.strOriginal;
+//	}
+//
+//	public String getRevised() {
+//		return this.strRevised;
+//	}
+
+	public List<String> getOriginal() {
 		return this.strOriginal;
 	}
 
-	public String getRevised() {
+	public List<String> getRevised() {
 		return this.strRevised;
 	}
 
@@ -60,7 +71,7 @@ public class DiffLine {
 			str = "INSERT";
 		} else if (mode == MODE_CHANGE) {
 			str = "CHANGE";
-			str2 = "{";
+			str2 = "{\n";
 			Iterator<DiffChar> iter = listDiffChar.iterator();
 			while (iter.hasNext()) {
 				DiffChar diffChar = iter.next();
