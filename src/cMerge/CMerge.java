@@ -1,9 +1,14 @@
 package cMerge;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +29,31 @@ public class CMerge {
 
 	// https://ja.stackoverflow.com/questions/52019/git-%E3%81%AE-3-way-merge-%E3%81%A8%E3%81%AF%E5%85%B7%E4%BD%93%E7%9A%84%E3%81%AB%E3%81%A9%E3%81%AE%E3%82%88%E3%81%86%E3%81%AA%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%A7%E3%81%99%E3%81%8B
 
+	private static void displayConflict(
+			List<String> linesConflict,
+			DiffLine diffX, DiffLine diffY) {
+		linesConflict.add("<<<<<<<");
+		if (diffX.getMode() == DiffLine.MODE_INSERT) {
+			linesConflict.add("+ " + diffX.getRevised());
+		} else if (diffX.getMode() == DiffLine.MODE_DELETE) {
+			linesConflict.add("- " + diffX.getOriginal());
+		} else {
+			linesConflict.add("- " + diffX.getOriginal());
+			linesConflict.add("+ " + diffX.getRevised());
+		}
+		linesConflict.add("++====");
+		if (diffY.getMode() == DiffLine.MODE_INSERT) {
+			linesConflict.add("+ " + diffY.getRevised());
+		} else if (diffY.getMode() == DiffLine.MODE_DELETE) {
+			linesConflict.add("- " + diffY.getOriginal());
+		} else {
+			linesConflict.add("- " + diffY.getOriginal());
+			linesConflict.add("+ " + diffY.getRevised());
+		}
+		linesConflict.add(">>>>>>>");
+		return;
+	}
+
 	// 行のCHANGEがあったときの各文字の処理
 	private static boolean mergeChangeChar(
 			List<String> linesZ, List<String> linesConflict,
@@ -37,9 +67,9 @@ public class CMerge {
 		while (iter.hasNext()) {
 			DiffChar diff = iter.next();
 			if (positionB < diff.getPosition()) {
-				D.dprint(diff.getPosition());
+//				D.dprint(diff.getPosition());
 				for (int i=positionB; i<diff.getPosition(); i++) {
-					D.dprint(i);
+//					D.dprint(i);
 					sb.append(strBase.charAt(i));
 				}
 				positionB = diff.getPosition() ;
@@ -130,8 +160,8 @@ public class CMerge {
 					diffY = null;
 				}
 			} else {
-				D.dprint(diffX.getPosition());
-				D.dprint(diffY.getPosition());
+//				D.dprint(diffX.getPosition());
+//				D.dprint(diffY.getPosition());
 				if (positionB < diffX.getPosition()) {
 					for (int i=positionB; i<diffX.getPosition(); i++) {
 						sb.append(strBase.charAt(i));
@@ -140,6 +170,7 @@ public class CMerge {
 				}
 				if (diffX.getMode() != diffY.getMode()) {
 					// 対応可能なパターンあるかも
+//					linesConflict.add("<<<<<<<");
 					D.dprint("コンフリクトmergeChange1");
 					D.dprint_method_end();
 					return false;
@@ -193,6 +224,7 @@ public class CMerge {
 			List<String> linesBase,
 			List<DiffLine> listDiffX, List<DiffLine> listDiffY) {
 		D.dprint_method_start();
+		boolean flagConflict = true;
 		int indexX = 0;
 		int indexY = 0;
 		int positionB = 0;
@@ -273,33 +305,49 @@ public class CMerge {
 				}
 				if (diffX.getMode() != diffY.getMode()) {
 					// 対応可能なパターンあるかも
+					flagConflict = false;
+					displayConflict(linesConflict,
+							diffX, diffY);
 					D.dprint("コンフリクトmerge1");
-					D.dprint_method_end();
-					return false;
-				}
-				if (diffX.getMode() == DiffLine.MODE_INSERT) {
-					if (! diffX.getRevised().equals(
-							diffY.getRevised())) {
-						D.dprint("コンフリクトmerge2");
-						D.dprint_method_end();
-						return false;
-					}
-					linesZ.add(diffX.getRevised());
-				} else if (diffX.getMode() == DiffLine.MODE_DELETE) {
-					positionB += 1;
+//					D.dprint_method_end();
+//					return false;
+					linesZ.add("コンフリクトmerge1");
 				} else {
-					// CHANGE
-					boolean flag = mergeChange(
-							linesZ, linesConflict,
-							linesBase.get(positionB),
-							diffX.getListDiffChar(),
-							diffY.getListDiffChar());
-					if (! flag) {
-						D.dprint("コンフリクトmerge3");
-						D.dprint_method_end();
-						return false;
+					if (diffX.getMode() == DiffLine.MODE_INSERT) {
+						D.dprint(diffX.getRevised());
+						D.dprint(diffY.getRevised());
+						if (! diffX.getRevised().equals(
+								diffY.getRevised())) {
+							flagConflict = false;
+							displayConflict(linesConflict,
+									diffX, diffY);
+							D.dprint("コンフリクトmerge2");
+	//						D.dprint_method_end();
+	//						return false;
+							linesZ.add("コンフリクトmerge2");
+						} else {
+							linesZ.add(diffX.getRevised());
+						}
+					} else if (diffX.getMode() == DiffLine.MODE_DELETE) {
+						positionB += 1;
+					} else {
+						// CHANGE
+						boolean flag = mergeChange(
+								linesZ, linesConflict,
+								linesBase.get(positionB),
+								diffX.getListDiffChar(),
+								diffY.getListDiffChar());
+						if (! flag) {
+							flagConflict = false;
+							displayConflict(linesConflict,
+									diffX, diffY);
+							D.dprint("コンフリクトmerge3");
+	//						D.dprint_method_end();
+	//						return false;
+							linesZ.add("コンフリクトmerge3");
+						}
+						positionB += 1;
 					}
-					positionB += 1;
 				}
 				indexX ++;
 				if (indexX < listDiffX.size()) {
@@ -319,7 +367,7 @@ public class CMerge {
 			linesZ.add(linesBase.get(i));
 		}
 		D.dprint_method_end();
-		return true;
+		return flagConflict;
 	}
 
 	private static List<DiffLine> createDiffList(
@@ -364,10 +412,13 @@ public class CMerge {
         	} else {
         		// 置換
         		createDiffListChange(listDiffLine, delta);
-
         	}
         }
         D.dprint(listDiffLine);
+        Iterator<DiffLine> iter = listDiffLine.iterator();
+        while (iter.hasNext()) {
+        	D.dprint(iter.next());
+        }
         D.dprint_method_end();
         return listDiffLine;
 	}
@@ -376,8 +427,8 @@ public class CMerge {
 	private static void createDiffListChange(
 			List<DiffLine> listDiffLine, Delta delta ) {
 		D.dprint_method_start();
-		D.dprint(delta.getOriginal().size());
-		D.dprint(delta.getRevised().size());
+//		D.dprint(delta.getOriginal().size());
+//		D.dprint(delta.getRevised().size());
 		if (delta.getOriginal().size()
 				== delta.getRevised().size()) {
 			for (int i = 0; i < delta.getOriginal().size(); i++) {
@@ -398,23 +449,23 @@ public class CMerge {
 					while (iter.hasNext()) {
 						Difference o = (Difference) iter.next();
 
-						String str = "[" +
-								o.getDeletedStart() + "," +
-								o.getDeletedEnd() + "," +
-								o.getAddedStart() + "," +
-								o.getAddedEnd() + "]";
-						D.dprint(str);
+//						String str = "[" +
+//								o.getDeletedStart() + "," +
+//								o.getDeletedEnd() + "," +
+//								o.getAddedStart() + "," +
+//								o.getAddedEnd() + "]";
+//						D.dprint(str);
 
 						DiffChar diffC;
 						if (o.getDeletedEnd() == -1) {
-							D.dprint(o.getAddedStart());
-							D.dprint(o.getAddedEnd());
+//							D.dprint(o.getAddedStart());
+//							D.dprint(o.getAddedEnd());
 							for (int j=o.getAddedStart();
 									j<o.getAddedEnd()+1; j++) {
 								diffC = new DiffChar(
 										DiffChar.MODE_INSERT,
 										o.getDeletedStart(),
-										"",
+										null,
 										dst[j]);
 								diffLine.addDiffChar(diffC);
 							}
@@ -425,7 +476,7 @@ public class CMerge {
 										DiffChar.MODE_DELETE,
 										j,
 										src[j],
-										"");
+										null);
 								diffLine.addDiffChar(diffC);
 							}
 						} else {
@@ -448,7 +499,7 @@ public class CMerge {
 											DiffChar.MODE_DELETE,
 											j,
 											src[j],
-											"");
+											null);
 									diffLine.addDiffChar(diffC);
 								}
 								for (int j=o.getAddedStart();
@@ -456,7 +507,7 @@ public class CMerge {
 									diffC = new DiffChar(
 											DiffChar.MODE_INSERT,
 											o.getDeletedEnd() + 1,
-											"",
+											null,
 											dst[j]);
 									diffLine.addDiffChar(diffC);
 								}
@@ -467,7 +518,30 @@ public class CMerge {
 				listDiffLine.add(diffLine);
 			}
 		} else {
-    		for (int i=0; i<delta.getOriginal().size(); i++ ) {
+			int i;
+    		for (i=0;
+    				i<Integer.min(delta.getOriginal().size(),
+    						delta.getRevised().size());
+    				i++ ) {
+	    		// TODO 暫定　
+    			DiffLine diffLine = new DiffLine(
+	    				DiffLine.MODE_DELETE,
+	    				delta.getOriginal().getPosition()+i,
+	    				(String) delta.getOriginal().getLines().get(i),
+	    				null
+	    				);
+	    		listDiffLine.add(diffLine);
+	    		diffLine = new DiffLine(
+	    				DiffLine.MODE_INSERT,
+	    				delta.getOriginal().getPosition()+i,
+	    				null,
+	    				(String) delta.getRevised().getLines().get(i)
+	    				);
+	    		listDiffLine.add(diffLine);
+//    			D.dprint(diffLine);
+    		}
+    		int ii = i;
+    		for (i=ii; i<delta.getOriginal().size(); i++ ) {
 	    		DiffLine diffLine = new DiffLine(
 	    				DiffLine.MODE_DELETE,
 	    				delta.getOriginal().getPosition()+i,
@@ -477,12 +551,12 @@ public class CMerge {
 	    		listDiffLine.add(diffLine);
 //    			D.dprint(diffLine);
     		}
-    		for (int i=0; i<delta.getRevised().size(); i++ ) {
+    		for (i=ii; i<delta.getRevised().size(); i++ ) {
 	    		DiffLine diffLine = new DiffLine(
 	    				DiffLine.MODE_INSERT,
 	    				delta.getOriginal().getPosition()+i,
-	    				(String) delta.getRevised().getLines().get(i),
-	    				null
+	    				null,
+	    				(String) delta.getRevised().getLines().get(i)
 	    				);
 	    		listDiffLine.add(diffLine);
 //    			D.dprint(diffLine);
@@ -515,18 +589,24 @@ public class CMerge {
 
 	private static void mainCmerge() {
 
+		String strFileBase, strFileX, strFileY;
 //		String strFileBase = args[0];
 //		String strFileBase = "base.txt";
-		String strFileBase = "改正前.txt";
+		strFileBase = "改正前.txt";
+		strFileBase = "旧所法8_4.txt";
 		D.dprint("ベースファイル:" + strFileBase);
+
 //		String strFileX = args[1];
 //		String strFileX = "X.txt";
-		String strFileX = "コメント入り.txt";
+		strFileX = "コメント入り.txt";
+		strFileX = "コメント所法8_4.txt";
 		D.dprint("ファイルX:" + strFileX);
 //		String strFileY = args[2];
 //		String strFileY = "Y.txt";
-		String strFileY = "改正後.txt";
+		strFileY = "改正後.txt";
+		strFileY = "新所法8_4.txt";
 		D.dprint("ファイルY:" + strFileY);
+		String strFileZ = "マージ.txt";
 
 		// https://hito4-t.hatenablog.com/entry/2015/02/09/223006
 
@@ -566,13 +646,41 @@ public class CMerge {
 		boolean flag = merge(
 				linesZ, linesConflict,
 				linesB, listDiffX, listDiffY);
+		D.dprint(flag);
+//		flag = true;
+    	Path path1 = Paths.get(strFileZ); //パス
+        try (BufferedWriter bw = Files.newBufferedWriter(
+        		path1, StandardCharsets.UTF_8);
+                PrintWriter pw = new PrintWriter(bw, true)) {
+            Iterator<String> iter = linesZ.iterator();
+            while (iter.hasNext()) {
+            	pw.println(iter.next());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		if (flag) {
+//	    	Path path1 = Paths.get(strFileZ); //パス
+//	        try (BufferedWriter bw = Files.newBufferedWriter(
+//	        		path1, StandardCharsets.UTF_8);
+//	                PrintWriter pw = new PrintWriter(bw, true)) {
+//	            Iterator<String> iter = linesZ.iterator();
+//	            while (iter.hasNext()) {
+//	            	pw.println(iter.next());
+//	            }
+//	        } catch (IOException e) {
+//	            e.printStackTrace();
+//	        }
+		} else {
+            Iterator<String> iter = linesConflict.iterator();
+            while (iter.hasNext()) {
+            	D.dprint(iter.next());
+            }
 
-		D.dprint(listDiffX);
-		D.dprint(listDiffY);
-		D.dprint(linesB);
-		D.dprint(linesX);
-		D.dprint(linesY);
-		D.dprint(linesZ);
+		}
+
+//		D.dprint(listDiffX);
+//		D.dprint(listDiffY);
 
 		return;
 
