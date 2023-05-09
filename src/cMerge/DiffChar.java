@@ -16,6 +16,9 @@ public class DiffChar {
 		this.position = position;
 		this.strOriginal = strOriginal;
 		this.strRevised = strRevised;
+		if (strRevised != null && strRevised.equals("")) {
+			D.dprint("===========================================");
+		}
 		return;
 	}
 
