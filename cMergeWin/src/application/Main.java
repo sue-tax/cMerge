@@ -8,18 +8,24 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application {
+	static final float VERSION = 0.12f;
+
+	public static Stage stage;
+
 	@Override
 	public void start(Stage primaryStage) {
+		stage = primaryStage;
 		try {
     		Parent root = FXMLLoader.load(
 	    			getClass().
 	    			getResource("cMerge.fxml"));
 			Scene scene = new Scene(root);
-//			BorderPane root = new BorderPane();
-//			Scene scene = new Scene(root,400,400);
 			scene.getStylesheets().add(getClass().
 					getResource("application.css").
 					toExternalForm());
+	    	primaryStage.setTitle(String.format(
+	    			"cMergeWin(version %s)",
+	    			VERSION));
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

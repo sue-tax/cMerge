@@ -154,9 +154,7 @@ public class CMerge {
 		DiffChar diffX = iterX.next();
 		DiffChar diffY = iterY.next();
 		while ((diffX != null) || (diffY != null)) {
-			D.dprint("mergeChange while Loop");
-//			D.dprint(diffX);
-//			D.dprint(diffY);
+//			D.dprint("mergeChange while Loop");
 			if ((diffY == null) ||
 					((diffX != null) &&
 					(diffX.getPosition() < diffY.getPosition()))) {
@@ -364,8 +362,6 @@ public class CMerge {
 		}
 		while ((diffX != null) || (diffY != null)) {
 //			D.dprint("merge while Loop");
-//			D.dprint(diffX);
-//			D.dprint(diffY);
 			if ((diffY == null) ||
 					((diffX != null) &&
 					(diffX.getPosition() < diffY.getPosition()))) {
@@ -554,13 +550,8 @@ public class CMerge {
 		List<DiffLine> listDiffLine = new ArrayList<DiffLine>();
 		Patch<String> patch = DiffUtils.diff(linesA, linesB);
         for (Delta delta : patch.getDeltas()) {
-//        	D.dprint(delta);
-//        	D.dprint(delta.getOriginal());
-//        	D.dprint(delta.getRevised());
-
         	if (delta.getOriginal().size() == 0) {
         		// 追加
-//        		D.dprint(delta.getRevised().size());
         		for (int i=0; i<delta.getRevised().size(); i++ ) {
             		DiffLine diffLine = new DiffLine(
             				DiffLine.MODE_INSERT,
@@ -568,12 +559,10 @@ public class CMerge {
             				null,
             				(String) delta.getRevised().getLines().get(i)
             				);
-//            		D.dprint(diffLine);
             		listDiffLine.add(diffLine);
         		}
         	} else if (delta.getRevised().size() == 0) {
         		// 削除
-//        		D.dprint(delta.getOriginal().size());
         		for (int i=0; i<delta.getOriginal().size(); i++ ) {
             		DiffLine diffLine = new DiffLine(
             				DiffLine.MODE_DELETE,
@@ -582,14 +571,13 @@ public class CMerge {
             				null
             				);
             		listDiffLine.add(diffLine);
-//            		D.dprint(diffLine);
         		}
         	} else {
         		// 置換
         		createDiffListChange(listDiffLine, delta);
         	}
         }
-        D.dprint(listDiffLine);
+//        D.dprint(listDiffLine);
         Iterator<DiffLine> iter = listDiffLine.iterator();
         while (iter.hasNext()) {
         	D.dprint(iter.next());
@@ -602,8 +590,6 @@ public class CMerge {
 	private static void createDiffListChange(
 			List<DiffLine> listDiffLine, Delta delta ) {
 		D.dprint_method_start();
-//		D.dprint(delta.getOriginal().size());
-//		D.dprint(delta.getRevised().size());
 		if (delta.getOriginal().size()
 				== delta.getRevised().size()) {
 			createDiffListChangeSame(listDiffLine, delta);
@@ -730,13 +716,6 @@ public class CMerge {
 							diffLine.addDiffChar(diffC);
 						}
 					} else {
-						D.dprint("DIFFER");
-						D.dprint(o.getDeletedStart());
-						D.dprint(o.getDeletedEnd());
-						D.dprint(Src1);
-						D.dprint(o.getAddedStart());
-						D.dprint(o.getAddedEnd());
-						D.dprint(Dst1);
 						for (int j=o.getDeletedStart();
 								j<o.getDeletedEnd()+1; j++) {
 							diffC = new DiffChar(
@@ -764,138 +743,4 @@ public class CMerge {
 		D.dprint_method_end();
 		return diffLine;
 	}
-
-//	static Stage stage;
-//
-//	@Override
-//	public void start(Stage stage) {
-//		try {
-//    		Parent root = FXMLLoader.load(
-//	    			getClass().
-//	    			getResource("cMerge.fxml"));
-//			Scene scene = new Scene(root);
-//			scene.getStylesheets().add(
-//					getClass().getResource(
-//					"application.css").toExternalForm());
-//	    	stage.setTitle(String.format(
-//	    			"nakoso version %.2f",
-//	    			CMerge.VERSION));
-//			stage.setScene(scene);
-//			stage.show();
-//			CMerge.stage = stage;
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//
-//	public static void main( String[] args ) {
-////		D.dprint(String.format("CMerge version %.2f",
-////				VERSION));
-//		launch(args);
-//
-////		mainTest();
-//	}
-
-//	private static void mainTest() {
-//
-//		String strFileBase, strFileX, strFileY;
-////		String strFileBase = args[0];
-//		strFileBase = "base.txt";
-////		strFileBase = "改正前.txt";
-//		strFileBase = "旧所法8_4.txt";
-////		strFileBase = "行_確定申告書資料依頼.md";
-//		D.dprint("ベースファイル:" + strFileBase);
-//
-////		String strFileX = args[1];
-//		strFileX = "X.txt";
-////		strFileX = "コメント入り.txt";
-//		strFileX = "コメント所法8_4.md";
-////		strFileX = "行_甲様_確定申告書資料依頼.md";
-//		D.dprint("ファイルX:" + strFileX);
-////		String strFileY = args[2];
-//		strFileY = "Y.txt";
-////		strFileY = "改正後.txt";
-//		strFileY = "新所法8_4.txt";
-////		strFileY = "行_新_確定申告書資料依頼.md";
-//		D.dprint("ファイルY:" + strFileY);
-//		String strFileZ = "マージ.txt";
-//
-//		// https://hito4-t.hatenablog.com/entry/2015/02/09/223006
-//
-//        List<String> linesB = null;
-//        List<String> linesX = null;
-//		List<String> linesY = null;
-//		try {
-//			linesB = Files.readAllLines(
-//					FileSystems.getDefault().getPath(strFileBase),
-//					Charset.defaultCharset());
-//			linesX = Files.readAllLines(
-//					FileSystems.getDefault().getPath(strFileX),
-//					Charset.defaultCharset());
-//			linesY = Files.readAllLines(
-//					FileSystems.getDefault().getPath(strFileY),
-//					Charset.defaultCharset());
-//		} catch (IOException e) {
-//			// TODO 自動生成された catch ブロック
-//			e.printStackTrace();
-//		}
-//
-////		linesB = new ArrayList<String>();
-////		linesB.add("AABB");
-////		linesX = new ArrayList<String>();
-////		linesX.add("AACCBBDD");
-////		linesY = new ArrayList<String>();
-////		linesY.add("AACCBB");
-//
-//		List<DiffLine> listDiffX = createDiffList(
-//				linesB, linesX);
-//		List<DiffLine> listDiffY = createDiffList(
-//				linesB, linesY);
-//
-//		List<String> linesZ = new ArrayList<String>();
-//		List<String> linesConflict = new ArrayList<String>();
-//
-//		boolean flag = merge(
-//				linesZ, linesConflict,
-//				linesB, listDiffX, listDiffY);
-//		D.dprint(flag);
-////		flag = true;
-//    	Path path1 = Paths.get(strFileZ); //パス
-//        try (BufferedWriter bw = Files.newBufferedWriter(
-//        		path1, StandardCharsets.UTF_8);
-//                PrintWriter pw = new PrintWriter(bw, true)) {
-//            Iterator<String> iter = linesZ.iterator();
-//            while (iter.hasNext()) {
-//            	pw.println(iter.next());
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//		if (flag) {
-////	    	Path path1 = Paths.get(strFileZ); //パス
-////	        try (BufferedWriter bw = Files.newBufferedWriter(
-////	        		path1, StandardCharsets.UTF_8);
-////	                PrintWriter pw = new PrintWriter(bw, true)) {
-////	            Iterator<String> iter = linesZ.iterator();
-////	            while (iter.hasNext()) {
-////	            	pw.println(iter.next());
-////	            }
-////	        } catch (IOException e) {
-////	            e.printStackTrace();
-////	        }
-//		} else {
-//            Iterator<String> iter = linesConflict.iterator();
-//            while (iter.hasNext()) {
-//            	D.dprint(iter.next());
-//            }
-//
-//		}
-//
-////		D.dprint(listDiffX);
-////		D.dprint(listDiffY);
-//
-//		return;
-//
-//	}
 }

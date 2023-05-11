@@ -30,13 +30,14 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 public class Controller {
 
-	String strFileBase = null;
-	String strFileX = null;
-	String strFileY = null;
-	String strFileMerge = null;
+//	String strFileBase = null;
+//	String strFileX = null;
+//	String strFileY = null;
+//	String strFileMerge = null;
 
 	List<String> linesMerge = null;
 
@@ -86,9 +87,148 @@ public class Controller {
     private WebView wvMerge; // Value injected by FXMLLoader
 
     @FXML
-    void onMerge(ActionEvent event) {
-    	// TODO ３ファイルセット済みか？
+    void onBase(ActionEvent event) {
+	    FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("ベース・ファイルの選択");
+	    String strBase = tfBase.getText();
+	    if ((strBase != null) && (! strBase.equals(""))) {
+	    	File file1 = new File(strBase);
+	    	File fileDir = new File(file1.getParent());
+	    	fileChooser.setInitialDirectory(fileDir);
+	    } else {
+	    	String userDir = System.getProperty("user.dir");
+	    	D.dprint(userDir);
+	    	File fileDir = new File(userDir);
+	    	fileChooser.setInitialDirectory(fileDir);
+	    }
+	    File file = null;
+		try {
+			file = fileChooser.showOpenDialog(Main.stage);
+		} catch (Exception e1) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		if (file == null) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		String strFileBase = file.toString();
+		tfBase.setText(strFileBase);
+    }
 
+    @FXML
+    void onX(ActionEvent event) {
+	    FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("ファイルＸの選択");
+	    String strX = tfX.getText();
+	    if ((strX != null) && (! strX.equals(""))) {
+	    	File file1 = new File(strX);
+	    	File fileDir = new File(file1.getParent());
+	    	fileChooser.setInitialDirectory(fileDir);
+	    } else {
+		    String strBase = tfBase.getText();
+		    if ((strBase != null) && (! strBase.equals(""))) {
+		    	File file1 = new File(strBase);
+		    	File fileDir = new File(file1.getParent());
+		    	fileChooser.setInitialDirectory(fileDir);
+		    } else {
+		    	String userDir = System.getProperty("user.dir");
+		    	D.dprint(userDir);
+		    	File fileDir = new File(userDir);
+		    	fileChooser.setInitialDirectory(fileDir);
+		    }
+	    }
+	    File file = null;
+		try {
+			file = fileChooser.showOpenDialog(Main.stage);
+		} catch (Exception e1) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		if (file == null) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		String strFileX = file.toString();
+		tfX.setText(strFileX);
+    }
+
+    @FXML
+    void onY(ActionEvent event) {
+	    FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("ファイルYの選択");
+	    String strY = tfY.getText();
+	    if ((strY != null) && (! strY.equals(""))) {
+	    	File file1 = new File(strY);
+	    	File fileDir = new File(file1.getParent());
+	    	fileChooser.setInitialDirectory(fileDir);
+	    } else {
+		    String strBase = tfBase.getText();
+		    if ((strBase != null) && (! strBase.equals(""))) {
+		    	File file1 = new File(strBase);
+		    	File fileDir = new File(file1.getParent());
+		    	fileChooser.setInitialDirectory(fileDir);
+		    } else {
+		    	String userDir = System.getProperty("user.dir");
+		    	D.dprint(userDir);
+		    	File fileDir = new File(userDir);
+		    	fileChooser.setInitialDirectory(fileDir);
+		    }
+	    }
+	    File file = null;
+		try {
+			file = fileChooser.showOpenDialog(Main.stage);
+		} catch (Exception e1) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		if (file == null) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		String strFileY = file.toString();
+		tfY.setText(strFileY);
+    }
+
+    @FXML
+    void onZ(ActionEvent event) {
+	    FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("マージ・ファイルの選択");
+	    String strMerge = tfMerge.getText();
+	    if ((strMerge != null) && (! strMerge.equals(""))) {
+	    	File file1 = new File(strMerge);
+	    	File fileDir = new File(file1.getParent());
+	    	fileChooser.setInitialDirectory(fileDir);
+	    } else {
+		    String strBase = tfBase.getText();
+		    if ((strBase != null) && (! strBase.equals(""))) {
+		    	File file1 = new File(strBase);
+		    	File fileDir = new File(file1.getParent());
+		    	fileChooser.setInitialDirectory(fileDir);
+		    } else {
+		    	String userDir = System.getProperty("user.dir");
+		    	D.dprint(userDir);
+		    	File fileDir = new File(userDir);
+		    	fileChooser.setInitialDirectory(fileDir);
+		    }
+	    }
+	    File file = null;
+		try {
+			file = fileChooser.showOpenDialog(Main.stage);
+		} catch (Exception e1) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		if (file == null) {
+			printMsg("ファイルの選択ができませんでした。");
+			return;
+		}
+		String strFileMerge = file.toString();
+		tfMerge.setText(strFileMerge);
+    }
+
+    @FXML
+    void onMerge(ActionEvent event) {
     	String strFileBase = tfBase.getText();
     	D.dprint(strFileBase);
         List<String> linesB = null;
@@ -157,7 +297,29 @@ public class Controller {
     		return;
     	}
     	String strFileZ = tfMerge.getText();
-    	
+    	if (strFileZ.equals("")) {
+    	    FileChooser fileChooser = new FileChooser();
+		    String strBase = tfBase.getText();
+		    if ((strBase != null) && (! strBase.equals(""))) {
+		    	File file1 = new File(strBase);
+		    	File fileDir = new File(file1.getParent());
+		    	fileChooser.setInitialDirectory(fileDir);
+    	    }
+    	    fileChooser.setTitle("マージ・ファイルの選択");
+    	    File file = null;
+    	    try {
+    			file = fileChooser.showSaveDialog(Main.stage);
+    		} catch (Exception e1) {
+    			printMsg("ファイルの選択ができませんでした。");
+    			return;
+    		}
+        	if (file == null) {
+    			printMsg("ファイルが選択されませんでした。");
+    			return;
+        	}
+        	strFileZ = file.toString();
+        	tfMerge.setText(strFileZ);
+    	}
     	Path path1 = Paths.get(strFileZ); //パス
     	try (BufferedWriter bw = Files.newBufferedWriter(
     			path1, StandardCharsets.UTF_8);
@@ -179,7 +341,7 @@ public class Controller {
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
-            strFileBase = file.getAbsolutePath();
+            String strFileBase = file.getAbsolutePath();
             D.dprint(strFileBase);
 //    		tfBase.setEditable(true);
     		tfBase.setText(strFileBase);
@@ -197,7 +359,7 @@ public class Controller {
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
-            strFileMerge = file.getAbsolutePath();
+            String strFileMerge = file.getAbsolutePath();
             D.dprint(strFileMerge);
 //    		tfMerge.setEditable(true);
             tfMerge.setText(strFileMerge);
@@ -216,7 +378,7 @@ public class Controller {
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
-            strFileX = file.getAbsolutePath();
+            String strFileX = file.getAbsolutePath();
             D.dprint(strFileX);
 //    		tfX.setEditable(true);
     		tfX.setText(strFileX);
@@ -235,7 +397,7 @@ public class Controller {
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
-            strFileBase = file.getAbsolutePath();
+            String strFileBase = file.getAbsolutePath();
             D.dprint(strFileBase);
 //    		tfY.setEditable(true);
             tfY.setText(strFileBase);
