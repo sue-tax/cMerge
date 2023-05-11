@@ -21,10 +21,13 @@ import org.incava.diff.Difference;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-
-
-public class CMerge {
+public class CMerge extends Application {
 	static final float VERSION = 0.11f;
 
 	private static String displayConflictChar(
@@ -649,30 +652,59 @@ public class CMerge {
 		return diffLine;
 	}
 
-	public static void main( String[] args ) {
-		D.dprint(String.format("CMerge version %.2f",
-				VERSION));
-		mainCmerge();
+	static Stage stage;
+
+	@Override
+	public void start(Stage stage) {
+		try {
+    		Parent root = FXMLLoader.load(
+	    			getClass().
+	    			getResource("cMerge.fxml"));
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(
+					getClass().getResource(
+					"application.css").toExternalForm());
+	    	stage.setTitle(String.format(
+	    			"nakoso version %.2f",
+	    			CMerge.VERSION));
+			stage.setScene(scene);
+			stage.show();
+			CMerge.stage = stage;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static void mainCmerge() {
+
+	public static void main( String[] args ) {
+//		D.dprint(String.format("CMerge version %.2f",
+//				VERSION));
+		launch(args);
+
+//		mainTest();
+	}
+
+	private static void mainTest() {
 
 		String strFileBase, strFileX, strFileY;
 //		String strFileBase = args[0];
 		strFileBase = "base.txt";
 //		strFileBase = "改正前.txt";
-//		strFileBase = "旧所法8_4.txt";
+		strFileBase = "旧所法8_4.txt";
+//		strFileBase = "行_確定申告書資料依頼.md";
 		D.dprint("ベースファイル:" + strFileBase);
 
 //		String strFileX = args[1];
 		strFileX = "X.txt";
 //		strFileX = "コメント入り.txt";
-//		strFileX = "コメント所法8_4.txt";
+		strFileX = "コメント所法8_4.md";
+//		strFileX = "行_甲様_確定申告書資料依頼.md";
 		D.dprint("ファイルX:" + strFileX);
 //		String strFileY = args[2];
 		strFileY = "Y.txt";
 //		strFileY = "改正後.txt";
-//		strFileY = "新所法8_4.txt";
+		strFileY = "新所法8_4.txt";
+//		strFileY = "行_新_確定申告書資料依頼.md";
 		D.dprint("ファイルY:" + strFileY);
 		String strFileZ = "マージ.txt";
 
