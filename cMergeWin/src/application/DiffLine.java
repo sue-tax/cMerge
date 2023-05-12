@@ -44,21 +44,11 @@ public class DiffLine {
 		return this.position;
 	}
 
-//	public String getOriginal() {
-//		return this.strOriginal;
-//	}
-//
-//	public String getRevised() {
-//		return this.strRevised;
-//	}
-
 	public String getOriginal() {
-//	public List<String> getOriginal() {
 		return this.strOriginal;
 	}
 
 	public String getRevised() {
-//	public List<String> getRevised() {
 		return this.strRevised;
 	}
 

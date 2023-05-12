@@ -19,9 +19,9 @@ public class DiffChar {
 			this.strOriginal = "@";	// ダミー
 		}
 		this.strRevised = strRevised;
-		if (strRevised != null && strRevised.equals("")) {
-			D.dprint("===========================================");
-		}
+//		if (strRevised != null && strRevised.equals("")) {
+//			D.dprint("===========================================");
+//		}
 		if (strRevised == null) {
 			this.strRevised = "@";	// ダミー
 		}

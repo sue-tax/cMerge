@@ -17,13 +17,15 @@ public class CMerge {
 
 	static final String X_COL = "<font color=\"blue\">";
 	static final String Y_COL = "<font color=\"green\">";
-	static final String M_COL = "<font color=\"lightGray\">";
+	static final String M_COL = "<font color=\"magenta\">";
 	static final String C_COL = "<font color=\"red\">";
 	static final String COL_END = "</font>";
 
 	static final String DEL_START = "<del>";
 	static final String DEL_END = "</del>";
 
+
+	// 文字でのコンフリクトの表示文字列
 	private static String displayConflictChar(
 			DiffChar diffX, DiffChar diffY) {
 		StringBuffer sb = new StringBuffer();
@@ -60,6 +62,7 @@ public class CMerge {
 		return str;
 	}
 
+	// 行でのコンフリクトの表示文字列
 	private static List<String> displayConflict(
 			DiffLine diffX, DiffLine diffY) {
 		List<String> lines = new ArrayList<String>();
@@ -87,7 +90,7 @@ public class CMerge {
 		return lines;
 	}
 
-	// 行のCHANGEがあったときの各文字の処理
+	// 行の単独CHANGEがあったときの各文字の処理
 	private static boolean mergeChangeChar(
 			List<String> linesZ, List<String> linesConflict,
 			String strColor, List<String> linesColor,
@@ -220,7 +223,7 @@ public class CMerge {
 	}
 
 
-	// X,Yとも行のCHANGEだったときの各文字の処理
+	// X,Yいずれかの行のCHANGEだったときの各文字の処理
 	private static boolean mergeChange(
 			List<String> linesZ, List<String> linesConflict,
 			List<String> linesColor,
@@ -327,7 +330,7 @@ public class CMerge {
 					sbC.append(DEL_START);
 					sbC.append(cOriginal);
 					sbC.append(DEL_END);
-					sb.append(cRevised);
+					sbC.append(cRevised);
 					sbC.append(COL_END);
 					positionB += 1;
 				}
@@ -347,7 +350,6 @@ public class CMerge {
 				}
 				int xMode = diffX.getMode();
 				int yMode = diffY.getMode();
-				// TODO 要検討
 				if ((xMode == DiffChar.MODE_INSERT) &&
 						(yMode == DiffChar.MODE_DELETE)) {
 					sb.append(diffX.getRevised());
@@ -360,8 +362,8 @@ public class CMerge {
 					sbC.append(diffX.getRevised().charAt(0));
 					sbC.append(COL_END);
 					positionB += 1;
-				} else if ((diffY.getMode() == DiffChar.MODE_INSERT) &&
-						(diffX.getMode() == DiffChar.MODE_DELETE)) {
+				} else if ((yMode == DiffChar.MODE_INSERT) &&
+						(xMode == DiffChar.MODE_DELETE)) {
 					sb.append(diffY.getRevised());
 					sbC.append(X_COL);
 					sbC.append(DEL_START);
@@ -372,18 +374,84 @@ public class CMerge {
 					sbC.append(diffY.getRevised().charAt(0));
 					sbC.append(COL_END);
 					positionB += 1;
-				} else if (diffX.getMode() != diffY.getMode()) {
-					// 対応可能なパターンあるかも
-					String str = displayConflictChar(diffX, diffY);
-					linesConflict.add(str);
-					linesZ.add(str);
-					linesColor.add(C_COL + str + COL_END);
-//					linesColor.add(C_COL);
-//					linesColor.add(str);
-//					linesColor.add(COL_END);
-					D.dprint("コンフリクトmergeChange1");
-					D.dprint_method_end();
-					return false;
+				} else if ((xMode == DiffChar.MODE_CHANGE) &&
+						(yMode == DiffChar.MODE_DELETE)) {
+					sb.append(diffX.getRevised());
+					sbC.append(Y_COL);
+					sbC.append(DEL_START);
+					sbC.append(diffY.getOriginal().charAt(0));
+					sbC.append(DEL_END);
+					sbC.append(COL_END);
+					sbC.append(X_COL);
+					sbC.append(diffX.getRevised().charAt(0));
+					sbC.append(COL_END);
+					positionB += 1;
+				} else if ((yMode == DiffChar.MODE_CHANGE) &&
+						(xMode == DiffChar.MODE_DELETE)) {
+					sb.append(diffY.getRevised());
+					sbC.append(X_COL);
+					sbC.append(DEL_START);
+					sbC.append(diffX.getOriginal().charAt(0));
+					sbC.append(DEL_END);
+					sbC.append(COL_END);
+					sbC.append(Y_COL);
+					sbC.append(diffY.getRevised().charAt(0));
+					sbC.append(COL_END);
+					positionB += 1;
+				} else if ((xMode == DiffChar.MODE_INSERT)&&
+						(yMode == DiffChar.MODE_CHANGE)) {
+					if (diffX.getRevised().charAt(0)
+							== diffY.getRevised().charAt(0)) {
+						sb.append(diffX.getRevised());
+						sbC.append(Y_COL);
+						sbC.append(DEL_START);
+						sbC.append(diffY.getOriginal().charAt(0));
+						sbC.append(DEL_END);
+						sbC.append(COL_END);
+						sbC.append(M_COL);
+						sbC.append(diffX.getRevised().charAt(0));
+						sbC.append(COL_END);
+						positionB += 1;
+					} else {
+						String str = displayConflictChar(diffX, diffY);
+						linesConflict.add(str);
+						linesZ.add(str);
+						linesColor.add(C_COL + str + COL_END);
+						D.dprint("コンフリクトmergeChange4");
+						D.dprint_method_end();
+						return false;
+					}
+				} else if ((yMode == DiffChar.MODE_INSERT)&&
+						(xMode == DiffChar.MODE_CHANGE)) {
+					if (diffY.getRevised().charAt(0)
+							== diffX.getRevised().charAt(0)) {
+						sb.append(diffY.getRevised());
+						sbC.append(X_COL);
+						sbC.append(DEL_START);
+						sbC.append(diffX.getOriginal().charAt(0));
+						sbC.append(DEL_END);
+						sbC.append(COL_END);
+						sbC.append(M_COL);
+						sbC.append(diffY.getRevised().charAt(0));
+						sbC.append(COL_END);
+						positionB += 1;
+					} else {
+						String str = displayConflictChar(diffX, diffY);
+						linesConflict.add(str);
+						linesZ.add(str);
+						linesColor.add(C_COL + str + COL_END);
+						D.dprint("コンフリクトmergeChange4");
+						D.dprint_method_end();
+						return false;
+					}
+//				} else if (xMode != yMode) {
+//					String str = displayConflictChar(diffX, diffY);
+//					linesConflict.add(str);
+//					linesZ.add(str);
+//					linesColor.add(C_COL + str + COL_END);
+//					D.dprint("コンフリクトmergeChange1");
+//					D.dprint_method_end();
+//					return false;
 				} else {
 					// xMode == yMode
 					assert(xMode == yMode);
@@ -514,7 +582,6 @@ public class CMerge {
 							diffX.getOriginal()
 							+ DEL_END
 							+ COL_END);
-//					positionB = diffX.getPosition() + 1;
 					positionB += 1;
 				} else {
 					boolean flag = mergeChangeChar(
@@ -525,7 +592,6 @@ public class CMerge {
 					if (! flag) {
 						flagConflict = false;
 					}
-//					positionB = diffX.getPosition() + 1;
 					positionB += 1;
 				}
 				indexX ++;
@@ -559,7 +625,6 @@ public class CMerge {
 							diffY.getOriginal()
 							+ DEL_END
 							+ COL_END);
-//					positionB = diffY.getPosition() + 1;
 					positionB += 1;
 				} else {
 					boolean flag = mergeChangeChar(
@@ -567,7 +632,9 @@ public class CMerge {
 						Y_COL, linesColor,
 						linesBase.get(positionB),
 						diffY.getListDiffChar());
-//					positionB = diffY.getPosition() + 1;
+					if (! flag) {
+						flagConflict =false;
+					}
 					positionB += 1;
 				}
 				indexY ++;
@@ -587,20 +654,127 @@ public class CMerge {
 					positionB = diffX.getPosition();
 				}
 				if (xMode != yMode) {
-					// 対応可能なパターンあるかも
-					flagConflict = false;
-					List<String> lines = displayConflict(
-							diffX, diffY);
-					linesConflict.addAll(lines);
-					D.dprint("コンフリクトmerge1");
-//					D.dprint_method_end();
-//					return false;
-					linesZ.add("コンフリクトmerge1");
-					linesZ.addAll(lines);
-					linesColor.add(C_COL);
-					linesColor.addAll(lines);
-					linesColor.add(COL_END);
-					// TODO positionB
+					if ((xMode == DiffLine.MODE_INSERT)
+							&& (yMode == DiffLine.MODE_DELETE)) {
+						linesZ.add(diffX.getRevised());
+						linesColor.add(Y_COL +
+								DEL_START +
+								diffY.getOriginal()
+								+ DEL_END
+								+ COL_END);
+						linesColor.add(X_COL +
+								diffX.getRevised()
+								+ COL_END);
+						positionB += 1;
+					} else if ((yMode == DiffLine.MODE_INSERT)
+							&& (xMode == DiffLine.MODE_DELETE)) {
+						linesZ.add(diffY.getRevised());
+						linesColor.add(X_COL +
+								DEL_START +
+								diffX.getOriginal()
+								+ DEL_END
+								+ COL_END);
+						linesColor.add(Y_COL +
+								diffY.getRevised()
+								+ COL_END);
+						positionB += 1;
+					} else if ((xMode == DiffLine.MODE_CHANGE)
+							&& (yMode == DiffLine.MODE_DELETE)) {
+						linesZ.add(diffX.getRevised());
+						linesColor.add(M_COL +
+								DEL_START +
+								diffY.getOriginal()
+								+ DEL_END
+								+ COL_END);
+						linesColor.add(X_COL +
+								diffX.getRevised()
+								+ COL_END);
+						positionB += 1;
+					} else if ((yMode == DiffLine.MODE_CHANGE)
+							&& (xMode == DiffLine.MODE_DELETE)) {
+						linesZ.add(diffY.getRevised());
+						linesColor.add(M_COL +
+								DEL_START +
+								diffX.getOriginal()
+								+ DEL_END
+								+ COL_END);
+						linesColor.add(Y_COL +
+								diffY.getRevised()
+								+ COL_END);
+						positionB += 1;
+					} else if ((xMode == DiffLine.MODE_CHANGE)
+							&& (yMode == DiffLine.MODE_INSERT)) {
+						if (diffX.getRevised().equals(
+								diffY.getRevised())) {
+							linesZ.add(diffX.getRevised());
+							linesColor.add(X_COL +
+									DEL_START +
+									diffX.getOriginal()
+									+ DEL_END
+									+ COL_END);
+							linesColor.add(M_COL +
+									diffX.getRevised()
+									+ COL_END);
+							positionB += 1;
+						} else {
+							flagConflict = false;
+							List<String> lines
+									= displayConflict(
+									diffX, diffY);
+							linesConflict.addAll(lines);
+							D.dprint("コンフリクトmerge5");
+//							D.dprint_method_end();
+//							return false;
+//							linesZ.add("コンフリクトmerge5");
+							linesZ.addAll(lines);
+							linesColor.add(C_COL);
+							linesColor.addAll(lines);
+							linesColor.add(COL_END);
+							positionB += 1;
+						}
+					} else if ((yMode == DiffLine.MODE_CHANGE)
+							&& (xMode == DiffLine.MODE_INSERT)) {
+						if (diffY.getRevised().equals(
+								diffX.getRevised())) {
+							linesZ.add(diffY.getRevised());
+							linesColor.add(Y_COL +
+									DEL_START +
+									diffY.getOriginal()
+									+ DEL_END
+									+ COL_END);
+							linesColor.add(M_COL +
+									diffY.getRevised()
+									+ COL_END);
+							positionB += 1;
+						} else {
+							flagConflict = false;
+							List<String> lines
+									= displayConflict(
+									diffX, diffY);
+							linesConflict.addAll(lines);
+							D.dprint("コンフリクトmerge5");
+//							D.dprint_method_end();
+//							return false;
+//							linesZ.add("コンフリクトmerge5");
+							linesZ.addAll(lines);
+							linesColor.add(C_COL);
+							linesColor.addAll(lines);
+							linesColor.add(COL_END);
+							positionB += 1;
+						}
+					}
+//					flagConflict = false;
+//					List<String> lines = displayConflict(
+//							diffX, diffY);
+//					linesConflict.addAll(lines);
+//					D.dprint("コンフリクトmerge1");
+////					D.dprint_method_end();
+////					return false;
+//					linesZ.add("コンフリクトmerge1");
+//					linesZ.addAll(lines);
+//					linesColor.add(C_COL);
+//					linesColor.addAll(lines);
+//					linesColor.add(COL_END);
 				} else {
 					assert(xMode == yMode);
 					if (xMode == DiffLine.MODE_INSERT) {
@@ -609,44 +783,30 @@ public class CMerge {
 							boolean flag = mergeInsert(
 									linesZ, linesConflict,
 									linesColor,
-//									linesBase.get(positionB),
 									diffX.getRevised(),
 									diffY.getRevised());
-//									diffX.getListDiffChar(),
-//									diffY.getListDiffChar());
 							if (! flag) {
 								flagConflict = false;
-								List<String> lines = displayConflict(
+								List<String> lines
+										= displayConflict(
 										diffX, diffY);
 								linesConflict.addAll(lines);
 								D.dprint("コンフリクトmerge2");
 		//						D.dprint_method_end();
 		//						return false;
-								linesZ.add("コンフリクトmerge2");
+//								linesZ.add("コンフリクトmerge2");
 								linesZ.addAll(lines);
-								linesColor.add(C_COL);
+								linesColor.add(C_COL); //改行多い
 								linesColor.addAll(lines);
 								linesColor.add(COL_END);
 							}
-//							flagConflict = false;
-//							List<String> lines = displayConflict(
-//									diffX, diffY);
-//							linesConflict.addAll(lines);
-//							D.dprint("コンフリクトmerge2");
-//	//						D.dprint_method_end();
-//	//						return false;
-//							linesZ.add("コンフリクトmerge2");
-//							linesZ.addAll(lines);
-//							linesColor.add(C_COL);
-//							linesColor.addAll(lines);
-//							linesColor.add(COL_END);
 						} else {
 							linesZ.add(diffX.getRevised());
 							linesColor.add(M_COL +
 									diffX.getRevised()
 									+ COL_END);
 						}
-					} else if (xMode == 	DiffLine.MODE_DELETE) {
+					} else if (xMode == DiffLine.MODE_DELETE) {
 						linesColor.add(M_COL +
 								DEL_START +
 								diffY.getOriginal()
@@ -655,27 +815,42 @@ public class CMerge {
 						positionB += 1;
 					} else {
 						// CHANGE
-						boolean flag = mergeChange(
-								linesZ, linesConflict,
-								linesColor,
-								linesBase.get(positionB),
-								diffX.getListDiffChar(),
-								diffY.getListDiffChar());
-						if (! flag) {
-							flagConflict = false;
-							List<String> lines = displayConflict(
-									diffX, diffY);
-							linesConflict.addAll(lines);
-							D.dprint("コンフリクトmerge3");
-	//						D.dprint_method_end();
-	//						return false;
-							linesZ.add("コンフリクトmerge3");
-							linesZ.addAll(lines);
-							linesColor.add(C_COL);
-							linesColor.addAll(lines);
-							linesColor.add(COL_END);
+						if (! diffX.getRevised().equals(
+								diffY.getRevised())) {
+							boolean flag = mergeChange(
+									linesZ, linesConflict,
+									linesColor,
+									linesBase.get(positionB),
+									diffX.getListDiffChar(),
+									diffY.getListDiffChar());
+							if (! flag) {
+								flagConflict = false;
+								List<String> lines
+										= displayConflict(
+										diffX, diffY);
+								linesConflict.addAll(lines);
+								D.dprint("コンフリクトmerge3");
+		//						D.dprint_method_end();
+		//						return false;
+								linesZ.add("コンフリクトmerge3");
+								linesZ.addAll(lines);
+								linesColor.add(C_COL);
+								linesColor.addAll(lines);
+								linesColor.add(COL_END);
+							}
+							positionB += 1;
+						} else {
+							linesZ.add(diffX.getRevised());
+							linesColor.add(M_COL +
+									DEL_START +
+									diffX.getOriginal()
+									+ DEL_END
+									+ COL_END);
+							linesColor.add(M_COL +
+									diffX.getRevised()
+									+ COL_END);
+							positionB += 1;
 						}
-						positionB += 1;
 					}
 				}
 				indexX ++;
@@ -709,7 +884,7 @@ public class CMerge {
 		List<DiffLine> listDiffLine
 				= new ArrayList<DiffLine>();
 		Patch<String> patch = DiffUtils.diff(linesA, linesB);
-        for (Delta delta : patch.getDeltas()) {
+        for (Delta<String> delta : patch.getDeltas()) {
         	if (delta.getOriginal().size() == 0) {
         		// 追加
         		for (int i=0; i<delta.getRevised().size();
@@ -753,7 +928,7 @@ public class CMerge {
 
 
 	private static void createDiffListChange(
-			List<DiffLine> listDiffLine, Delta delta ) {
+			List<DiffLine> listDiffLine, Delta<String> delta ) {
 		D.dprint_method_start();
 		if (delta.getOriginal().size()
 				== delta.getRevised().size()) {
@@ -764,26 +939,8 @@ public class CMerge {
     				i<Integer.min(delta.getOriginal().size(),
     						delta.getRevised().size());
     				i++ ) {
-	    		// TODO 暫定　
-    			// もし、各行が似ているならば、CHANGEも
-    			// 考えられる。
     			DiffLine diffLine = createDiffCharChange(delta, i);
     			listDiffLine.add(diffLine);
-//    			DiffLine diffLine = new DiffLine(
-//	    				DiffLine.MODE_DELETE,
-//	    				delta.getOriginal().getPosition()+i,
-//	    				(String) delta.getOriginal().getLines().get(i),
-//	    				null
-//	    				);
-//	    		listDiffLine.add(diffLine);
-//	    		diffLine = new DiffLine(
-//	    				DiffLine.MODE_INSERT,
-//	    				delta.getOriginal().getPosition()+i,
-//	    				null,
-//	    				(String) delta.getRevised().getLines().get(i)
-//	    				);
-//	    		listDiffLine.add(diffLine);
-//    			D.dprint(diffLine);
     		}
     		int ii = i;
     		for (i=ii; i<delta.getOriginal().size(); i++ ) {
@@ -814,7 +971,7 @@ public class CMerge {
 	}
 
 	private static void createDiffListChangeSame(
-			List<DiffLine> listDiffLine, Delta delta) {
+			List<DiffLine> listDiffLine, Delta<String> delta) {
 		D.dprint_method_start();
 		for (int i = 0; i < delta.getOriginal().size();
 				i++) {
@@ -826,7 +983,7 @@ public class CMerge {
 	}
 
 	private static DiffLine createDiffCharChange(
-			Delta delta, int i) {
+			Delta<String> delta, int i) {
 		D.dprint_method_start();
 		String Src1 = (String)delta.getOriginal().
 				getLines().get(i);
@@ -849,14 +1006,18 @@ public class CMerge {
 				DiffLine.MODE_CHANGE,
 				pos,
 				strA, strB);
+//		char[] src = strA.toCharArray();
+//		char[] dst = strB.toCharArray();
 		String[] src = strA.split("");
 		String[] dst = strB.split("");
 		Diff<String> diff = (Diff<String>)
-				new Diff(src, dst);
-		List lDiff = diff.execute();
+				new Diff<String>(src, dst);
+//		Diff<char[]> diff = (Diff<char[]>)
+//				new Diff(src, dst);
+		List<Difference> lDiff = diff.execute();
 		if (lDiff.size() != 0) {
-			int index = 0;
-			Iterator <Difference>iter = lDiff.iterator();
+//			int index = 0;
+			Iterator<Difference> iter = lDiff.iterator();
 			while (iter.hasNext()) {
 				D.dprint("while loop");
 				Difference o = iter.next();
