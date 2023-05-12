@@ -17,7 +17,7 @@ public final class D {
 	 * 1 コンソールへプリント
 	 * 3 ログファイルへ書込み
 	 */
-	private static int c = 1;
+	private static int c = 0;
 
 	public static <T> void dprint(T value) {
 		if (D.c == 1) {

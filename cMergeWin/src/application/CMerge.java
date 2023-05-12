@@ -13,7 +13,7 @@ import difflib.Patch;
 
 
 public class CMerge {
-	public static final float VERSION = 0.11f;
+	public static final float VERSION = 0.13f;
 
 	static final String X_COL = "<font color=\"blue\">";
 	static final String Y_COL = "<font color=\"green\">";
@@ -535,16 +535,30 @@ public class CMerge {
 			List<DiffLine> listDiffY) {
 		D.dprint_method_start();
 		boolean flagConflict = true;
-		int indexX = 0;
-		int indexY = 0;
+//		int indexX = 0;
+//		int indexY = 0;
 		int positionB = 0;
-		DiffLine diffX = null;
-		if (listDiffX.size() != 0) {
-			diffX = listDiffX.get(indexX);
+		Iterator<DiffLine> iterX = listDiffX.iterator();
+		Iterator<DiffLine> iterY = listDiffY.iterator();
+//		DiffLine diffX = null;
+//		if (listDiffX.size() != 0) {
+//			diffX = listDiffX.get(indexX);
+//		}
+//		DiffLine diffY = null;
+//		if (listDiffY.size() != 0) {
+//			diffY = listDiffY.get(indexY);
+//		}
+		DiffLine diffX;
+		DiffLine diffY;
+		if (iterX.hasNext()) {
+			diffX = iterX.next();
+		} else {
+			diffX = null;
 		}
-		DiffLine diffY = null;
-		if (listDiffY.size() != 0) {
-			diffY = listDiffY.get(indexY);
+		if (iterY.hasNext()) {
+			diffY = iterY.next();
+		} else {
+			diffY = null;
 		}
 		while ((diffX != null) || (diffY != null)) {
 			D.dprint("merge while Loop");
@@ -594,9 +608,14 @@ public class CMerge {
 					}
 					positionB += 1;
 				}
-				indexX ++;
-				if (indexX < listDiffX.size()) {
-					diffX = listDiffX.get(indexX);
+//				indexX ++;
+//				if (indexX < listDiffX.size()) {
+//					diffX = listDiffX.get(indexX);
+//				} else {
+//					diffX = null;
+//				}
+				if (iterX.hasNext()) {
+					diffX = iterX.next();
 				} else {
 					diffX = null;
 				}
@@ -637,9 +656,14 @@ public class CMerge {
 					}
 					positionB += 1;
 				}
-				indexY ++;
-				if (indexY < listDiffY.size()) {
-					diffY = listDiffY.get(indexY);
+//				indexY ++;
+//				if (indexY < listDiffY.size()) {
+//					diffY = listDiffY.get(indexY);
+//				} else {
+//					diffY = null;
+//				}
+				if (iterY.hasNext()) {
+					diffY = iterY.next();
 				} else {
 					diffY = null;
 				}
@@ -763,18 +787,6 @@ public class CMerge {
 							positionB += 1;
 						}
 					}
-//					flagConflict = false;
-//					List<String> lines = displayConflict(
-//							diffX, diffY);
-//					linesConflict.addAll(lines);
-//					D.dprint("コンフリクトmerge1");
-////					D.dprint_method_end();
-////					return false;
-//					linesZ.add("コンフリクトmerge1");
-//					linesZ.addAll(lines);
-//					linesColor.add(C_COL);
-//					linesColor.addAll(lines);
-//					linesColor.add(COL_END);
 				} else {
 					assert(xMode == yMode);
 					if (xMode == DiffLine.MODE_INSERT) {
@@ -853,15 +865,25 @@ public class CMerge {
 						}
 					}
 				}
-				indexX ++;
-				if (indexX < listDiffX.size()) {
-					diffX = listDiffX.get(indexX);
+//				indexX ++;
+//				if (indexX < listDiffX.size()) {
+//					diffX = listDiffX.get(indexX);
+//				} else {
+//					diffX = null;
+//				}
+//				indexY ++;
+//				if (indexY < listDiffY.size()) {
+//					diffY = listDiffY.get(indexY);
+//				} else {
+//					diffY = null;
+//				}
+				if (iterX.hasNext()) {
+					diffX = iterX.next();
 				} else {
 					diffX = null;
 				}
-				indexY ++;
-				if (indexY < listDiffY.size()) {
-					diffY = listDiffY.get(indexY);
+				if (iterY.hasNext()) {
+					diffY = iterY.next();
 				} else {
 					diffY = null;
 				}
