@@ -15,9 +15,15 @@ public class DiffChar {
 		this.mode = mode;
 		this.position = position;
 		this.strOriginal = strOriginal;
+		if (strOriginal == null) {
+			this.strOriginal = "@";	// ダミー
+		}
 		this.strRevised = strRevised;
 		if (strRevised != null && strRevised.equals("")) {
 			D.dprint("===========================================");
+		}
+		if (strRevised == null) {
+			this.strRevised = "@";	// ダミー
 		}
 		return;
 	}
