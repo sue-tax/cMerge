@@ -17,19 +17,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 public class Controller {
@@ -74,8 +78,8 @@ public class Controller {
     @FXML // fx:id="tfMerge"
     private TextField tfMerge; // Value injected by FXMLLoader
 
-    @FXML // fx:id="tfMsg"
-    private TextField tfMsg; // Value injected by FXMLLoader
+//    @FXML // fx:id="tfMsg"
+//    private TextField tfMsg; // Value injected by FXMLLoader
 
     @FXML // fx:id="tfX"
     private TextField tfX; // Value injected by FXMLLoader
@@ -87,45 +91,17 @@ public class Controller {
     private WebView wvMerge; // Value injected by FXMLLoader
 
     @FXML
-    void onBase(ActionEvent event) {
-	    FileChooser fileChooser = new FileChooser();
-	    fileChooser.setTitle("ベース・ファイルの選択");
-	    String strBase = tfBase.getText();
-	    if ((strBase != null) && (! strBase.equals(""))) {
-	    	File file1 = new File(strBase);
-	    	File fileDir = new File(file1.getParent());
-	    	fileChooser.setInitialDirectory(fileDir);
-	    } else {
-	    	String userDir = System.getProperty("user.dir");
-	    	D.dprint(userDir);
-	    	File fileDir = new File(userDir);
-	    	fileChooser.setInitialDirectory(fileDir);
-	    }
-	    File file = null;
-		try {
-			file = fileChooser.showOpenDialog(Main.stage);
-		} catch (Exception e1) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		if (file == null) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		String strFileBase = file.toString();
-		tfBase.setText(strFileBase);
-    }
+    private RadioButton rbFolder;
 
     @FXML
-    void onX(ActionEvent event) {
-	    FileChooser fileChooser = new FileChooser();
-	    fileChooser.setTitle("ファイルＸの選択");
-	    String strX = tfX.getText();
-	    if ((strX != null) && (! strX.equals(""))) {
-	    	File file1 = new File(strX);
-	    	File fileDir = new File(file1.getParent());
-	    	fileChooser.setInitialDirectory(fileDir);
-	    } else {
+    private TextArea taMsg;
+
+    @FXML
+    void onBase(ActionEvent event) {
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (! flagFolder) {
+	    	FileChooser fileChooser = new FileChooser();
+		    fileChooser.setTitle("ベース・ファイルの選択");
 		    String strBase = tfBase.getText();
 		    if ((strBase != null) && (! strBase.equals(""))) {
 		    	File file1 = new File(strBase);
@@ -137,161 +113,511 @@ public class Controller {
 		    	File fileDir = new File(userDir);
 		    	fileChooser.setInitialDirectory(fileDir);
 		    }
-	    }
-	    File file = null;
-		try {
-			file = fileChooser.showOpenDialog(Main.stage);
-		} catch (Exception e1) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		if (file == null) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		String strFileX = file.toString();
-		tfX.setText(strFileX);
+		    File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			String strFileBase = file.toString();
+			tfBase.setText(strFileBase);
+    	} else {
+	    	DirectoryChooser dirChooser = new DirectoryChooser();
+		    dirChooser.setTitle("ベース・フォルダの選択");
+		    String strBase = tfBase.getText();
+		    if ((strBase != null) && (! strBase.equals(""))) {
+		    	File file1 = new File(strBase);
+		    	File fileDir = new File(file1.getParent());
+		    	dirChooser.setInitialDirectory(fileDir);
+		    } else {
+		    	String userDir = System.getProperty("user.dir");
+		    	D.dprint(userDir);
+		    	File fileDir = new File(userDir);
+		    	dirChooser.setInitialDirectory(fileDir);
+		    }
+		    File file = null;
+			try {
+				file = dirChooser.showDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			String strFolderBase = file.toString();
+			tfBase.setText(strFolderBase);
+    	}
+   	}
+
+    @FXML
+    void onX(ActionEvent event) {
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (! flagFolder) {
+		    FileChooser fileChooser = new FileChooser();
+		    fileChooser.setTitle("ファイルＸの選択");
+		    String strX = tfX.getText();
+		    if ((strX != null) && (! strX.equals(""))) {
+		    	File file1 = new File(strX);
+		    	File fileDir = new File(file1.getParent());
+		    	fileChooser.setInitialDirectory(fileDir);
+		    } else {
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	fileChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	fileChooser.setInitialDirectory(fileDir);
+			    }
+		    }
+		    File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			String strFileX = file.toString();
+			tfX.setText(strFileX);
+    	} else {
+    		DirectoryChooser dirChooser = new DirectoryChooser();
+		    dirChooser.setTitle("フォルダＸの選択");
+		    String strX = tfX.getText();
+		    if ((strX != null) && (! strX.equals(""))) {
+		    	File file1 = new File(strX);
+		    	File fileDir = new File(file1.getParent());
+		    	dirChooser.setInitialDirectory(fileDir);
+		    } else {
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	dirChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	dirChooser.setInitialDirectory(fileDir);
+			    }
+		    }
+		    File file = null;
+			try {
+				file = dirChooser.showDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			String strFolderX = file.toString();
+			tfX.setText(strFolderX);
+    	}
     }
 
     @FXML
     void onY(ActionEvent event) {
-	    FileChooser fileChooser = new FileChooser();
-	    fileChooser.setTitle("ファイルYの選択");
-	    String strY = tfY.getText();
-	    if ((strY != null) && (! strY.equals(""))) {
-	    	File file1 = new File(strY);
-	    	File fileDir = new File(file1.getParent());
-	    	fileChooser.setInitialDirectory(fileDir);
-	    } else {
-		    String strBase = tfBase.getText();
-		    if ((strBase != null) && (! strBase.equals(""))) {
-		    	File file1 = new File(strBase);
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (! flagFolder) {
+		    FileChooser fileChooser = new FileChooser();
+		    fileChooser.setTitle("ファイルYの選択");
+		    String strY = tfY.getText();
+		    if ((strY != null) && (! strY.equals(""))) {
+		    	File file1 = new File(strY);
 		    	File fileDir = new File(file1.getParent());
 		    	fileChooser.setInitialDirectory(fileDir);
 		    } else {
-		    	String userDir = System.getProperty("user.dir");
-		    	D.dprint(userDir);
-		    	File fileDir = new File(userDir);
-		    	fileChooser.setInitialDirectory(fileDir);
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	fileChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	fileChooser.setInitialDirectory(fileDir);
+			    }
 		    }
-	    }
-	    File file = null;
-		try {
-			file = fileChooser.showOpenDialog(Main.stage);
-		} catch (Exception e1) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		if (file == null) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		String strFileY = file.toString();
-		tfY.setText(strFileY);
+		    File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			String strFileY = file.toString();
+			tfY.setText(strFileY);
+    	} else {
+    		DirectoryChooser dirChooser = new DirectoryChooser();
+    		dirChooser.setTitle("フォルダYの選択");
+		    String strY = tfY.getText();
+		    if ((strY != null) && (! strY.equals(""))) {
+		    	File file1 = new File(strY);
+		    	File fileDir = new File(file1.getParent());
+		    	dirChooser.setInitialDirectory(fileDir);
+		    } else {
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	dirChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	dirChooser.setInitialDirectory(fileDir);
+			    }
+		    }
+		    File file = null;
+			try {
+				file = dirChooser.showDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			String strFolderY = file.toString();
+			tfY.setText(strFolderY);
+    	}
     }
 
     @FXML
     void onZ(ActionEvent event) {
-	    FileChooser fileChooser = new FileChooser();
-	    fileChooser.setTitle("マージ・ファイルの選択");
-	    String strMerge = tfMerge.getText();
-	    if ((strMerge != null) && (! strMerge.equals(""))) {
-	    	File file1 = new File(strMerge);
-	    	File fileDir = new File(file1.getParent());
-	    	fileChooser.setInitialDirectory(fileDir);
-	    } else {
-		    String strBase = tfBase.getText();
-		    if ((strBase != null) && (! strBase.equals(""))) {
-		    	File file1 = new File(strBase);
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (! flagFolder) {
+		    FileChooser fileChooser = new FileChooser();
+		    fileChooser.setTitle("マージ・ファイルの選択");
+		    String strMerge = tfMerge.getText();
+		    if ((strMerge != null) && (! strMerge.equals(""))) {
+		    	File file1 = new File(strMerge);
 		    	File fileDir = new File(file1.getParent());
 		    	fileChooser.setInitialDirectory(fileDir);
 		    } else {
-		    	String userDir = System.getProperty("user.dir");
-		    	D.dprint(userDir);
-		    	File fileDir = new File(userDir);
-		    	fileChooser.setInitialDirectory(fileDir);
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	fileChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	fileChooser.setInitialDirectory(fileDir);
+			    }
 		    }
-	    }
-	    File file = null;
-		try {
-			file = fileChooser.showOpenDialog(Main.stage);
-		} catch (Exception e1) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		if (file == null) {
-			printMsg("ファイルの選択ができませんでした。");
-			return;
-		}
-		String strFileMerge = file.toString();
-		tfMerge.setText(strFileMerge);
+		    File file = null;
+			try {
+				file = fileChooser.showOpenDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("ファイルの選択ができませんでした。");
+				return;
+			}
+			String strFileMerge = file.toString();
+			tfMerge.setText(strFileMerge);
+    	} else {
+		    DirectoryChooser dirChooser = new DirectoryChooser();
+		    dirChooser.setTitle("マージ・フォルダの選択");
+		    String strMerge = tfMerge.getText();
+		    if ((strMerge != null) && (! strMerge.equals(""))) {
+		    	File file1 = new File(strMerge);
+		    	File fileDir = new File(file1.getParent());
+		    	dirChooser.setInitialDirectory(fileDir);
+		    } else {
+			    String strBase = tfBase.getText();
+			    if ((strBase != null) && (! strBase.equals(""))) {
+			    	File file1 = new File(strBase);
+			    	File fileDir = new File(file1.getParent());
+			    	dirChooser.setInitialDirectory(fileDir);
+			    } else {
+			    	String userDir = System.getProperty("user.dir");
+			    	D.dprint(userDir);
+			    	File fileDir = new File(userDir);
+			    	dirChooser.setInitialDirectory(fileDir);
+			    }
+		    }
+		    File file = null;
+			try {
+				file = dirChooser.showDialog(Main.stage);
+			} catch (Exception e1) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			if (file == null) {
+				printMsg("フォルダの選択ができませんでした。");
+				return;
+			}
+			String strFolderMerge = file.toString();
+			tfMerge.setText(strFolderMerge);
+    	}
     }
 
     @FXML
     void onMerge(ActionEvent event) {
-    	String strFileBase = tfBase.getText();
-    	D.dprint(strFileBase);
-        List<String> linesB = null;
-		try {
-			linesB = Files.readAllLines(
-					FileSystems.getDefault().getPath(strFileBase),
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			printMsg("ベース・ファイル" + strFileBase + "が読めません。");
-			return;
-		}
-    	String strFileX = tfX.getText();
-    	D.dprint(strFileX);
-        List<String> linesX = null;
-		try {
-			linesX = Files.readAllLines(
-					FileSystems.getDefault().getPath(strFileX),
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			printMsg("Ｘファイル" + strFileX + "が読めません。");
-			return;
-		}
-    	String strFileY = tfY.getText();
-    	D.dprint(strFileY);
-		List<String> linesY = null;
-		try {
-			linesY = Files.readAllLines(
-					FileSystems.getDefault().getPath(strFileY),
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			printMsg("Ｙファイル" + strFileY + "が読めません。");
-			return;
-		}
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (! flagFolder) {
+			String strFileBase = tfBase.getText();
+			D.dprint(strFileBase);
+		    List<String> linesB = null;
+			try {
+				linesB = Files.readAllLines(
+						FileSystems.getDefault().getPath(strFileBase),
+						Charset.defaultCharset());
+			} catch (IOException e) {
+				printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+				return;
+			}
+			String strFileX = tfX.getText();
+			D.dprint(strFileX);
+		    List<String> linesX = null;
+			try {
+				linesX = Files.readAllLines(
+						FileSystems.getDefault().getPath(strFileX),
+						Charset.defaultCharset());
+			} catch (IOException e) {
+				printMsg("Ｘファイル" + strFileX + "が読めません。");
+				return;
+			}
+			String strFileY = tfY.getText();
+			D.dprint(strFileY);
+			List<String> linesY = null;
+			try {
+				linesY = Files.readAllLines(
+						FileSystems.getDefault().getPath(strFileY),
+						Charset.defaultCharset());
+			} catch (IOException e) {
+				printMsg("Ｙファイル" + strFileY + "が読めません。");
+				return;
+			}
 
-		List<DiffLine> listDiffX = CMerge.createDiffList(
-				linesB, linesX);
-		List<DiffLine> listDiffY = CMerge.createDiffList(
-				linesB, linesY);
+			List<DiffLine> listDiffX = CMerge.createDiffList(
+					linesB, linesX);
+			List<DiffLine> listDiffY = CMerge.createDiffList(
+					linesB, linesY);
 
-		List<String> linesZ = new ArrayList<String>();
-		List<String> linesConflict = new ArrayList<String>();
-		List<String> linesColor = new ArrayList<String>();
+			List<String> linesZ = new ArrayList<String>();
+			List<String> linesConflict = new ArrayList<String>();
+			List<String> linesColor = new ArrayList<String>();
 
-		boolean flag = CMerge.merge(
-				linesZ, linesConflict,
-				linesColor,
-				linesB, listDiffX, listDiffY);
-		D.dprint(flag);
-		if (flag) {
-			printMsg("コンフリクトなしでマージしました。");
-		} else {
-			printMsg("コンフリクトが発生しました。");
-		}
-		linesMerge = linesZ;
-		D.dprint(linesZ);
-		D.dprint(linesColor);
-		String strColored = String.join("<br>", linesColor);
-		D.dprint(strColored);
-    	wvMerge.getEngine().loadContent(strColored);
+			boolean flag = CMerge.merge(
+					linesZ, linesConflict,
+					linesColor,
+					linesB, listDiffX, listDiffY);
+			D.dprint(flag);
+			if (flag) {
+				printMsg("コンフリクトなしでマージしました。");
+			} else {
+				printMsg("コンフリクトが発生しました。");
+			}
+			linesMerge = linesZ;
+			D.dprint(linesZ);
+			D.dprint(linesColor);
+			String strColored = String.join("<br>", linesColor);
+			D.dprint(strColored);
+			wvMerge.getEngine().loadContent(strColored);
+    	} else {
+			String strFolderBase = tfBase.getText();
+			D.dprint(strFolderBase);
+			if (strFolderBase == "") {
+				printMsg("ベース・フォルダが指定されていません。");
+			}
+			String strFolderX = tfX.getText();
+			D.dprint(strFolderX);
+			if (strFolderX == "") {
+				printMsg("Ｘフォルダが指定されていません。");
+			}
+			String strFolderY = tfY.getText();
+			D.dprint(strFolderY);
+			if (strFolderY == "") {
+				printMsg("Ｙフォルダが指定されていません。");
+			}
+			String strFolderMerge = tfMerge.getText();
+			D.dprint(strFolderMerge);
+			if (strFolderMerge == "") {
+				printMsg("マージ・フォルダが指定されていません。");
+			}
+
+			File folderBase = new File(strFolderBase);
+			File fileBaseArray[] = folderBase.listFiles();
+			Set<String> setBase = new HashSet<String>();
+	        for (File f: fileBaseArray){
+	            if(f.isFile()) {
+	            	setBase.add(f.getName());
+	            }
+	        }
+			File folderX = new File(strFolderX);
+			File fileXArray[] = folderX.listFiles();
+			Set<String> setX = new HashSet<String>();
+	        for (File f: fileXArray){
+	            if(f.isFile()) {
+	            	setX.add(f.getName());
+	            }
+	        }
+			File folderY = new File(strFolderY);
+			File fileYArray[] = folderY.listFiles();
+			Set<String> setY = new HashSet<String>();
+	        for (File f: fileYArray){
+	            if(f.isFile()) {
+	            	setY.add(f.getName());
+	            }
+	        }
+	        for (String strBaseFile:setBase) {
+	        	if (! setX.contains(strBaseFile)) {
+	        		if (! setY.contains(strBaseFile)) {
+	        			printMsg(strBaseFile +
+	        				"はＸフォルダとＹフォルダにありません。");
+	        		} else {
+	        			printMsg(strBaseFile +
+		        				"はＸフォルダにありません。");
+	        		}
+	        		continue;
+	        	} else if (! setY.contains(strBaseFile)) {
+        			printMsg(strBaseFile +
+	        				"はＹフォルダにありません。");
+	        		continue;
+	        	}
+
+	        	String strFileBase = strFolderBase + "\\"
+	        			+ strBaseFile;
+	        	String strFileX = strFolderX + "\\"
+	        			+ strBaseFile;
+	        	String strFileY = strFolderY + "\\"
+	        			+ strBaseFile;
+				List<String> linesB = null;
+				try {
+					linesB = Files.readAllLines(
+							FileSystems.getDefault().
+									getPath(strFileBase),
+							Charset.defaultCharset());
+				} catch (IOException e) {
+					printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+					return;
+				}
+			    List<String> linesX = null;
+				try {
+					linesX = Files.readAllLines(
+							FileSystems.getDefault().
+									getPath(strFileX),
+							Charset.defaultCharset());
+				} catch (IOException e) {
+					printMsg("Ｘファイル" + strFileX + "が読めません。");
+					return;
+				}
+				List<String> linesY = null;
+				try {
+					linesY = Files.readAllLines(
+							FileSystems.getDefault().
+									getPath(strFileY),
+							Charset.defaultCharset());
+				} catch (IOException e) {
+					printMsg("Ｙファイル" + strFileY + "が読めません。");
+					return;
+				}
+
+				List<DiffLine> listDiffX =
+						CMerge.createDiffList(
+						linesB, linesX);
+				List<DiffLine> listDiffY =
+						CMerge.createDiffList(
+						linesB, linesY);
+
+				List<String> linesZ = new ArrayList<String>();
+				List<String> linesConflict = new ArrayList<String>();
+				List<String> linesColor = new ArrayList<String>();
+
+				boolean flag = CMerge.merge(
+						linesZ, linesConflict,
+						linesColor,
+						linesB, listDiffX, listDiffY);
+				D.dprint(flag);
+				if (flag) {
+					printMsg(strBaseFile +
+							"は、コンフリクトなしでマージしました。");
+				} else {
+					printMsg(strBaseFile +
+							"は、コンフリクトが発生しました。");
+				}
+				linesMerge = linesZ;
+				D.dprint(linesZ);
+				D.dprint(linesColor);
+				String strColored = String.join(
+						"<br>", linesColor);
+				D.dprint(strColored);
+				wvMerge.getEngine().loadContent(strColored);
+
+	        	String strFileZ = strFolderMerge + "\\"
+	        			+ strBaseFile;
+		    	Path path1 = Paths.get(strFileZ); //パス
+		    	try (BufferedWriter bw = Files.newBufferedWriter(
+		    			path1, StandardCharsets.UTF_8);
+		              PrintWriter pw = new PrintWriter(bw, true)) {
+		    		Iterator<String> iter = linesMerge.iterator();
+		    		while (iter.hasNext()) {
+		    			pw.println(iter.next());
+		    		}
+		    	} catch (IOException e) {
+		    		printMsg(strBaseFile +
+		    				"は、保存できませんでした。");
+		    		return;
+		    	}
+		    	printMsg(strBaseFile +
+		    			"は、マージ・ファイルに保存しました。");
+	        }
+	        // X,Yのみにあるファイル
+	        for (String strX:setX) {
+	        	if (! setBase.contains(strX)) {
+	        		if (! setY.contains(strX)) {
+	        			printMsg(strX +
+	        				"はベース・フォルダとＹフォルダにありません。");
+	        		} else {
+	        			printMsg(strX +
+		        				"はベース・フォルダにありません。");
+	        		}
+	        	}
+	        }
+	        for (String strY:setY) {
+	        	if (! setBase.contains(strY)) {
+	        		if (! setX.contains(strY)) {
+	        			printMsg(strY +
+		        				"はベース・フォルダとＸフォルダにありません。");
+	        		}
+	        	}
+	        }
+    	}
     }
 
     @FXML
     void onSaveAction(ActionEvent event) {
+    	if (rbFolder.isSelected()) {
+    		printMsg("フォルダ指定の場合は保存済みです");
+    		return;
+    	}
     	if (linesMerge == null) {
     		printMsg("マージされていません。");
     		return;
@@ -338,7 +664,8 @@ public class Controller {
 
     @FXML
     void onDragDroppedBase(DragEvent event) {
-        Dragboard board = event.getDragboard();
+    	// TODO フォルダ対応
+    	Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
             String strFileBase = file.getAbsolutePath();
@@ -356,6 +683,7 @@ public class Controller {
 
     @FXML
     void onDragDroppedMerge(DragEvent event) {
+    	// TODO フォルダ対応
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
@@ -375,6 +703,7 @@ public class Controller {
 
     @FXML
     void onDragDroppedX(DragEvent event) {
+    	// TODO フォルダ対応
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
@@ -394,6 +723,7 @@ public class Controller {
 
     @FXML
     void onDragDroppedY(DragEvent event) {
+    	// TODO フォルダ対応
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
@@ -421,10 +751,15 @@ public class Controller {
 
 
     void printMsg( String strMsg ) {
-		tfMsg.setEditable(true);
-		tfMsg.setText(strMsg);
-		tfMsg.end();
-		tfMsg.setEditable(false);
+//		tfMsg.setEditable(true);
+//		tfMsg.setText(strMsg);
+//		tfMsg.end();
+//		tfMsg.setEditable(false);
+		taMsg.setEditable(true);
+		taMsg.appendText(strMsg);
+		taMsg.appendText("\n");
+		taMsg.end();
+		taMsg.setEditable(false);
 		return;
     }
 
@@ -439,10 +774,12 @@ public class Controller {
         assert textAreaConflict != null : "fx:id=\"textAreaConflict\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfBase != null : "fx:id=\"tfBase\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfMerge != null : "fx:id=\"tfMerge\" was not injected: check your FXML file 'cMerge.fxml'.";
-        assert tfMsg != null : "fx:id=\"tfMsg\" was not injected: check your FXML file 'cMerge.fxml'.";
+//        assert tfMsg != null : "fx:id=\"tfMsg\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfX != null : "fx:id=\"tfX\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfY != null : "fx:id=\"tfY\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert wvMerge != null : "fx:id=\"wvMerge\" was not injected: check your FXML file 'cMerge.fxml'.";
+        assert rbFolder != null : "fx:id=\"rbFolder\" was not injected: check your FXML file 'cMerge.fxml'.";
+        assert taMsg != null : "fx:id=\"taMsg\" was not injected: check your FXML file 'cMerge.fxml'.";
 
     }
 
