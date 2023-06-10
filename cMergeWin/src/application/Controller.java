@@ -451,7 +451,6 @@ public class Controller {
 			}
 
 			String strJogaiBase = tfJogaiBase.getText();
-//			D.dprint(strJogaiBase);
 			File folderBase = new File(strFolderBase);
 			File fileBaseArray[] = folderBase.listFiles();
 			Set<String> setBase = new HashSet<String>();
@@ -459,7 +458,6 @@ public class Controller {
 	            if(f.isFile()) {
 	            	String strFile = f.getName().
 	            			replaceAll(strJogaiBase, "");
-//	            	D.dprint(strFile);
 	            	setBase.add(strFile);
 	            }
 	        }
@@ -471,12 +469,10 @@ public class Controller {
 	            if(f.isFile()) {
 	            	String strFile = f.getName().
 	            			replaceAll(strJogaiX, "");
-//	            	D.dprint(strFile);
 	            	setX.add(strFile);
 	            }
 	        }
 	        for (String strBaseFile:setBase) {
-//	        	D.dprint(strBaseFile);
 	        	if (! setX.contains(strBaseFile)) {
         			printMsg(strBaseFile +
 	        				"はＸフォルダにありません。");
@@ -484,32 +480,39 @@ public class Controller {
 	        	}
 
 		        String strFileBase = "";
-	        	for (File f: fileBaseArray){
-		            if(f.isFile()) {
-		            	strFileBase = f.getName();
-		            	String strFile = strFileBase.
-		            			replaceAll(strJogaiBase, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiBase.equals("")) {
+		        	for (File f: fileBaseArray){
+			            if(f.isFile()) {
+			            	strFileBase = f.getName();
+			            	String strFile = strFileBase.
+			            			replaceAll(strJogaiBase, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileBase = strBaseFile;
 		        }
 	        	strFileBase = strFolderBase + "\\"
 	        			+ strFileBase;
 		        String strFileX = "";
-	        	for (File f: fileXArray){
-		            if(f.isFile()) {
-		            	strFileX = f.getName();
-		            	String strFile = strFileX.
-		            			replaceAll(strJogaiX, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiX.equals("")) {
+		        	for (File f: fileXArray){
+			            if(f.isFile()) {
+			            	strFileX = f.getName();
+			            	String strFile = strFileX.
+			            			replaceAll(strJogaiX, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileX = strBaseFile;
 		        }
 	        	strFileX = strFolderX + "\\"
 	        			+ strFileX;
-//	        	D.dprint(strFileBase);
 				List<String> linesB = null;
 				try {
 					linesB = Files.readAllLines(
@@ -520,8 +523,6 @@ public class Controller {
 					printMsg("ベース・ファイル" + strFileBase + "が読めません。");
 					continue;
 				}
-//				D.dprint(linesB);
-//				D.dprint(strFileX);
 			    List<String> linesX = null;
 				try {
 					linesX = Files.readAllLines(
@@ -585,10 +586,6 @@ public class Controller {
     void onCompareY(ActionEvent event) {
     	D.dprint_method_start();
     	Boolean flagFolder = rbFolder.isSelected();
-//    	if (flagFolder) {
-//    		printMsg("フォルダ指定の比較はできません。");
-//    		return;
-//    	}
     	if (! flagFolder) {
 			String strFileBase = tfBase.getText();
 			D.dprint(strFileBase);
@@ -665,35 +662,42 @@ public class Controller {
 	            }
 	        }
 	        for (String strBaseFile:setBase) {
-//	        	D.dprint(strBaseFile);
 	        	if (! setY.contains(strBaseFile)) {
         			printMsg(strBaseFile +
 	        				"はＹフォルダにありません。");
 	        		continue;
 	        	}
 		        String strFileBase = "";
-	        	for (File f: fileBaseArray){
-		            if(f.isFile()) {
-		            	strFileBase = f.getName();
-		            	String strFile = strFileBase.
-		            			replaceAll(strJogaiBase, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiBase.equals("")) {
+		        	for (File f: fileBaseArray){
+			            if(f.isFile()) {
+			            	strFileBase = f.getName();
+			            	String strFile = strFileBase.
+			            			replaceAll(strJogaiBase, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileBase = strBaseFile;
 		        }
 	        	strFileBase = strFolderBase + "\\"
 	        			+ strFileBase;
 		        String strFileY = "";
-	        	for (File f: fileYArray){
-		            if(f.isFile()) {
-		            	strFileY = f.getName();
-		            	String strFile = strFileY.
-		            			replaceAll(strJogaiY, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiY.equals("")) {
+		        	for (File f: fileYArray){
+			            if(f.isFile()) {
+			            	strFileY = f.getName();
+			            	String strFile = strFileY.
+			            			replaceAll(strJogaiY, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileY = strBaseFile;
 		        }
 	        	strFileY = strFolderY + "\\"
 	        			+ strFileY;
@@ -904,41 +908,53 @@ public class Controller {
 	        	}
 
 		        String strFileBase = "";
-	        	for (File f: fileBaseArray){
-		            if(f.isFile()) {
-		            	strFileBase = f.getName();
-		            	String strFile = strFileBase.
-		            			replaceAll(strJogaiBase, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiBase.equals("")) {
+		        	for (File f: fileBaseArray){
+			            if(f.isFile()) {
+			            	strFileBase = f.getName();
+			            	String strFile = strFileBase.
+			            			replaceAll(strJogaiBase, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileBase = strBaseFile;
 		        }
 	        	strFileBase = strFolderBase + "\\"
 	        			+ strFileBase;
 		        String strFileX = "";
-	        	for (File f: fileXArray){
-		            if(f.isFile()) {
-		            	strFileX = f.getName();
-		            	String strFile = strFileX.
-		            			replaceAll(strJogaiX, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiX.equals("")) {
+		        	for (File f: fileXArray){
+			            if(f.isFile()) {
+			            	strFileX = f.getName();
+			            	String strFile = strFileX.
+			            			replaceAll(strJogaiX, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileX = strBaseFile;
 		        }
 	        	strFileX = strFolderX + "\\"
 	        			+ strFileX;
 		        String strFileY = "";
-	        	for (File f: fileYArray){
-		            if(f.isFile()) {
-		            	strFileY = f.getName();
-		            	String strFile = strFileY.
-		            			replaceAll(strJogaiY, "");
-		            	if (strFile.equals(strBaseFile)) {
-		            		break;
-		            	}
-		            }
+		        if (! strJogaiY.equals("")) {
+		        	for (File f: fileYArray){
+			            if(f.isFile()) {
+			            	strFileY = f.getName();
+			            	String strFile = strFileY.
+			            			replaceAll(strJogaiY, "");
+			            	if (strFile.equals(strBaseFile)) {
+			            		break;
+			            	}
+			            }
+			        }
+		        } else {
+		        	strFileY = strBaseFile;
 		        }
 	        	strFileY = strFolderY + "\\"
 	        			+ strFileY;
@@ -997,11 +1013,11 @@ public class Controller {
 							"は、コンフリクトが発生しました。");
 				}
 				linesMerge = linesZ;
-				D.dprint(linesZ);
-				D.dprint(linesColor);
+//				D.dprint(linesZ);
+//				D.dprint(linesColor);
 				String strColored = String.join(
 						"<br>", linesColor);
-				D.dprint(strColored);
+//				D.dprint(strColored);
 				wvMerge.getEngine().loadContent(strColored);
 
 	        	String strFileZ = strFolderMerge + "\\"
@@ -1097,16 +1113,13 @@ public class Controller {
 
     @FXML
     void onDragDroppedBase(DragEvent event) {
-    	// TODO フォルダ対応
     	Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
             String strFileBase = file.getAbsolutePath();
             D.dprint(strFileBase);
-//    		tfBase.setEditable(true);
     		tfBase.setText(strFileBase);
     		tfBase.end();
-//    		tfBase.setEditable(false);
     		printMsg("ベース・ファイル名を設定しました。");
             event.setDropCompleted(true);
         } else {
@@ -1116,16 +1129,13 @@ public class Controller {
 
     @FXML
     void onDragDroppedMerge(DragEvent event) {
-    	// TODO フォルダ対応
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
             String strFileMerge = file.getAbsolutePath();
             D.dprint(strFileMerge);
-//    		tfMerge.setEditable(true);
             tfMerge.setText(strFileMerge);
             tfMerge.end();
-//    		tfMerge.setEditable(false);
     		printMsg("マージ・ファイル名を設定しました。");
             event.setDropCompleted(true);
         } else {
@@ -1156,16 +1166,13 @@ public class Controller {
 
     @FXML
     void onDragDroppedY(DragEvent event) {
-    	// TODO フォルダ対応
         Dragboard board = event.getDragboard();
         if (board.hasFiles()) {
         	File file = board.getFiles().get(0);
             String strFileBase = file.getAbsolutePath();
             D.dprint(strFileBase);
-//    		tfY.setEditable(true);
             tfY.setText(strFileBase);
             tfY.end();
-//    		tfY.setEditable(false);
     		printMsg("Ｙファイル名を設定しました。");
             event.setDropCompleted(true);
         } else {
@@ -1184,10 +1191,6 @@ public class Controller {
 
 
     void printMsg( String strMsg ) {
-//		tfMsg.setEditable(true);
-//		tfMsg.setText(strMsg);
-//		tfMsg.end();
-//		tfMsg.setEditable(false);
 		taMsg.setEditable(true);
 		taMsg.appendText(strMsg);
 		taMsg.appendText("\n");

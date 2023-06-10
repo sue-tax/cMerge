@@ -36,13 +36,6 @@ public class CMerge {
 		int positionB = 0;
 		Iterator<DiffLine> iterDiff = listDiff.iterator();
 		DiffLine diffLine;
-		// mergeから派生させたため、ループ条件が変
-//		if (iterDiff.hasNext()) {
-//			diffLine = iterDiff.next();
-//		} else {
-//			diffLine = null;
-//		}
-//		while (diffLine != null) {
 		while (iterDiff.hasNext()) {
 			D.dprint("compare while Loop");
 			diffLine = iterDiff.next();
@@ -51,13 +44,11 @@ public class CMerge {
 				for (int i = positionB; i < Integer.min(
 						diffLine.getPosition(),
 						linesBase.size()); i++) {
-					//				linesZ.add(linesBase.get(i));
 					linesColor.add(linesBase.get(i));
 				}
 				positionB = diffLine.getPosition();
 			}
 			if (mode == DiffLine.MODE_INSERT) {
-//				linesZ.add(diffX.getRevised());
 				linesColor.add(strCol +
 						diffLine.getRevised()
 						+ COL_END);
@@ -70,8 +61,6 @@ public class CMerge {
 				positionB += 1;
 			} else {
 				assert(mode==DiffLine.MODE_CHANGE);
-				D.dprint(positionB);
-				D.dprint(diffLine);
 				compareChangeChar(
 					strCol, linesColor,
 					linesBase.get(positionB),
@@ -79,13 +68,9 @@ public class CMerge {
 
 				positionB += 1;
 			}
-//			if (iterDiff.hasNext()) {
-//				diffLine = iterDiff.next();
-//			}
 			D.dprint(positionB);
 		}
 		for (int i=positionB; i<linesBase.size(); i++) {
-//			linesZ.add(linesBase.get(i));
 			linesColor.add(linesBase.get(i));
 		}
 		D.dprint_method_end();
@@ -98,29 +83,22 @@ public class CMerge {
 			String strBase,
 			List<DiffChar> listDiff) {
 		D.dprint_method_start();
-		D.dprint(strBase);
-		D.dprint(listDiff);
-//		StringBuffer sb = new StringBuffer();
+//		D.dprint(strBase);
+//		D.dprint(listDiff);
 		StringBuffer sbC = new StringBuffer();
 		int positionB = 0;
 		Iterator<DiffChar> iter = listDiff.iterator();
 		while (iter.hasNext()) {
 			DiffChar diff = iter.next();
-			D.dprint(diff);
-			D.dprint(positionB);
-			D.dprint(diff.getPosition());
 			if (positionB < diff.getPosition()) {
 				for (int i=positionB;
 						i<diff.getPosition(); i++) {
-//					sb.append(strBase.charAt(i));
 					sbC.append(strBase.charAt(i));
 				}
 				positionB = diff.getPosition() ;
-//				positionB = diff.getPosition() - 1;
 			}
 			int mode = diff.getMode();
 			if (mode == DiffChar.MODE_INSERT) {
-//				sb.append(diff.getRevised());
 				sbC.append(strColor);
 				sbC.append(diff.getRevised());
 				sbC.append(COL_END);
@@ -132,7 +110,6 @@ public class CMerge {
 				sbC.append(COL_END);
 				positionB += 1;
 			} else {
-//				sb.append(diff.getRevised());
 				sbC.append(strColor);
 				sbC.append(DEL_START);
 				sbC.append(diff.getOriginal());
@@ -144,11 +121,8 @@ public class CMerge {
 			D.dprint(positionB);
 		}
 		for (int i=positionB; i<strBase.length(); i++) {
-//			sb.append(strBase.charAt(i));
 			sbC.append(strBase.charAt(i));
 		}
-//		String strZ = sb.toString();
-//		linesZ.add(strZ);
 		String strC = sbC.toString();
 		linesColor.add(strC);
 		D.dprint_method_end();
