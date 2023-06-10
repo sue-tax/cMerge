@@ -397,10 +397,6 @@ public class Controller {
     void onCompareX(ActionEvent event) {
     	D.dprint_method_start();
     	Boolean flagFolder = rbFolder.isSelected();
-//    	if (flagFolder) {
-//    		printMsg("フォルダ指定の比較はできません。");
-//    		return;
-//    	}
     	if (! flagFolder) {
 			String strFileBase = tfBase.getText();
 			D.dprint(strFileBase);
@@ -448,11 +444,6 @@ public class Controller {
 			if (strFolderX == "") {
 				printMsg("Ｘフォルダが指定されていません。");
 			}
-//			String strFolderY = tfY.getText();
-//			D.dprint(strFolderY);
-//			if (strFolderY == "") {
-//				printMsg("Ｙフォルダが指定されていません。");
-//			}
 			String strFolderMerge = tfMerge.getText();
 			D.dprint(strFolderMerge);
 			if (strFolderMerge == "") {
@@ -460,7 +451,7 @@ public class Controller {
 			}
 
 			String strJogaiBase = tfJogaiBase.getText();
-			D.dprint(strJogaiBase);
+//			D.dprint(strJogaiBase);
 			File folderBase = new File(strFolderBase);
 			File fileBaseArray[] = folderBase.listFiles();
 			Set<String> setBase = new HashSet<String>();
@@ -468,6 +459,7 @@ public class Controller {
 	            if(f.isFile()) {
 	            	String strFile = f.getName().
 	            			replaceAll(strJogaiBase, "");
+//	            	D.dprint(strFile);
 	            	setBase.add(strFile);
 	            }
 	        }
@@ -479,21 +471,12 @@ public class Controller {
 	            if(f.isFile()) {
 	            	String strFile = f.getName().
 	            			replaceAll(strJogaiX, "");
+//	            	D.dprint(strFile);
 	            	setX.add(strFile);
 	            }
 	        }
-//			String strJogaiY = tfJogaiY.getText();
-//			File folderY = new File(strFolderY);
-//			File fileYArray[] = folderY.listFiles();
-//			Set<String> setY = new HashSet<String>();
-//	        for (File f: fileYArray){
-//	            if(f.isFile()) {
-//	            	String strFile = f.getName().
-//	            			replaceAll(strJogaiY, "");
-//	            	setY.add(strFile);
-//	            }
-//	        }
 	        for (String strBaseFile:setBase) {
+//	        	D.dprint(strBaseFile);
 	        	if (! setX.contains(strBaseFile)) {
         			printMsg(strBaseFile +
 	        				"はＸフォルダにありません。");
@@ -506,7 +489,7 @@ public class Controller {
 		            	strFileBase = f.getName();
 		            	String strFile = strFileBase.
 		            			replaceAll(strJogaiBase, "");
-		            	if (strFile == strBaseFile) {
+		            	if (strFile.equals(strBaseFile)) {
 		            		break;
 		            	}
 		            }
@@ -519,26 +502,14 @@ public class Controller {
 		            	strFileX = f.getName();
 		            	String strFile = strFileX.
 		            			replaceAll(strJogaiX, "");
-		            	if (strFile == strBaseFile) {
+		            	if (strFile.equals(strBaseFile)) {
 		            		break;
 		            	}
 		            }
 		        }
 	        	strFileX = strFolderX + "\\"
 	        			+ strFileX;
-//		        String strFileY = "";
-//	        	for (File f: fileYArray){
-//		            if(f.isFile()) {
-//		            	strFileY = f.getName();
-//		            	String strFile = strFileY.
-//		            			replaceAll(strJogaiY, "");
-//		            	if (strFile == strBaseFile) {
-//		            		break;
-//		            	}
-//		            }
-//		        }
-//	        	strFileY = strFolderY + "\\"
-//	        			+ strFileY;
+//	        	D.dprint(strFileBase);
 				List<String> linesB = null;
 				try {
 					linesB = Files.readAllLines(
@@ -547,8 +518,10 @@ public class Controller {
 							Charset.defaultCharset());
 				} catch (IOException e) {
 					printMsg("ベース・ファイル" + strFileBase + "が読めません。");
-					return;
+					continue;
 				}
+//				D.dprint(linesB);
+//				D.dprint(strFileX);
 			    List<String> linesX = null;
 				try {
 					linesX = Files.readAllLines(
@@ -557,19 +530,10 @@ public class Controller {
 							Charset.defaultCharset());
 				} catch (IOException e) {
 					printMsg("Ｘファイル" + strFileX + "が読めません。");
-					return;
+					continue;
 				}
-//				List<String> linesY = null;
-//				try {
-//					linesY = Files.readAllLines(
-//							FileSystems.getDefault().
-//									getPath(strFileY),
-//							Charset.defaultCharset());
-//				} catch (IOException e) {
-//					printMsg("Ｙファイル" + strFileY + "が読めません。");
-//					return;
-//				}
-				List<DiffLine> listDiff = CMerge.createDiffList(
+				List<DiffLine> listDiff =
+						CMerge.createDiffList(
 						linesB, linesX);
 				List<String> linesColor = new ArrayList<String>();
 
@@ -621,45 +585,186 @@ public class Controller {
     void onCompareY(ActionEvent event) {
     	D.dprint_method_start();
     	Boolean flagFolder = rbFolder.isSelected();
-    	if (flagFolder) {
-    		printMsg("フォルダ指定の比較はできません。");
-    		return;
+//    	if (flagFolder) {
+//    		printMsg("フォルダ指定の比較はできません。");
+//    		return;
+//    	}
+    	if (! flagFolder) {
+			String strFileBase = tfBase.getText();
+			D.dprint(strFileBase);
+		    List<String> linesB = null;
+			try {
+				linesB = Files.readAllLines(
+						FileSystems.getDefault().getPath(strFileBase),
+						Charset.defaultCharset());
+			} catch (IOException e) {
+				printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+				return;
+			}
+			String strFileY = tfY.getText();
+			D.dprint(strFileY);
+		    List<String> linesY = null;
+			try {
+				linesY = Files.readAllLines(
+						FileSystems.getDefault().getPath(strFileY),
+						Charset.defaultCharset());
+			} catch (IOException e) {
+				printMsg("Ｙファイル" + strFileY + "が読めません。");
+				return;
+			}
+
+			List<DiffLine> listDiff = CMerge.createDiffList(
+					linesB, linesY);
+			List<String> linesColor = new ArrayList<String>();
+
+			CMerge.compare(
+					linesColor,
+					linesB, listDiff, CMerge.Y_COL);
+			printMsg("ベース・ファイルとＹファイルを比較しました。");
+			D.dprint(linesColor);
+			String strColored = String.join("<br>", linesColor);
+			D.dprint(strColored);
+			wvMerge.getEngine().loadContent(strColored);
+    	} else {
+			String strFolderBase = tfBase.getText();
+			D.dprint(strFolderBase);
+			if (strFolderBase == "") {
+				printMsg("ベース・フォルダが指定されていません。");
+			}
+			String strFolderY = tfY.getText();
+			D.dprint(strFolderY);
+			if (strFolderY == "") {
+				printMsg("Ｙフォルダが指定されていません。");
+			}
+			String strFolderMerge = tfMerge.getText();
+			D.dprint(strFolderMerge);
+			if (strFolderMerge == "") {
+				printMsg("マージ・フォルダが指定されていません。");
+			}
+
+			String strJogaiBase = tfJogaiBase.getText();
+			File folderBase = new File(strFolderBase);
+			File fileBaseArray[] = folderBase.listFiles();
+			Set<String> setBase = new HashSet<String>();
+	        for (File f: fileBaseArray){
+	            if(f.isFile()) {
+	            	String strFile = f.getName().
+	            			replaceAll(strJogaiBase, "");
+	            	setBase.add(strFile);
+	            }
+	        }
+			String strJogaiY = tfJogaiY.getText();
+			File folderY = new File(strFolderY);
+			File fileYArray[] = folderY.listFiles();
+			Set<String> setY = new HashSet<String>();
+	        for (File f: fileYArray){
+	            if(f.isFile()) {
+	            	String strFile = f.getName().
+	            			replaceAll(strJogaiY, "");
+	            	setY.add(strFile);
+	            }
+	        }
+	        for (String strBaseFile:setBase) {
+//	        	D.dprint(strBaseFile);
+	        	if (! setY.contains(strBaseFile)) {
+        			printMsg(strBaseFile +
+	        				"はＹフォルダにありません。");
+	        		continue;
+	        	}
+		        String strFileBase = "";
+	        	for (File f: fileBaseArray){
+		            if(f.isFile()) {
+		            	strFileBase = f.getName();
+		            	String strFile = strFileBase.
+		            			replaceAll(strJogaiBase, "");
+		            	if (strFile.equals(strBaseFile)) {
+		            		break;
+		            	}
+		            }
+		        }
+	        	strFileBase = strFolderBase + "\\"
+	        			+ strFileBase;
+		        String strFileY = "";
+	        	for (File f: fileYArray){
+		            if(f.isFile()) {
+		            	strFileY = f.getName();
+		            	String strFile = strFileY.
+		            			replaceAll(strJogaiY, "");
+		            	if (strFile.equals(strBaseFile)) {
+		            		break;
+		            	}
+		            }
+		        }
+	        	strFileY = strFolderY + "\\"
+	        			+ strFileY;
+				List<String> linesB = null;
+				try {
+					linesB = Files.readAllLines(
+							FileSystems.getDefault().
+									getPath(strFileBase),
+							Charset.defaultCharset());
+				} catch (IOException e) {
+					printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+					continue;
+				}
+			    List<String> linesY = null;
+				try {
+					linesY = Files.readAllLines(
+							FileSystems.getDefault().
+									getPath(strFileY),
+							Charset.defaultCharset());
+				} catch (IOException e) {
+					printMsg("Ｙファイル" + strFileY + "が読めません。");
+					continue;
+				}
+				List<DiffLine> listDiff =
+						CMerge.createDiffList(
+						linesB, linesY);
+				List<String> linesColor =
+						new ArrayList<String>();
+
+				if (listDiff.size() == 0) {
+		    		D.dprint(strBaseFile +
+		    				"は、同一でした。");
+		    		printMsg(strBaseFile +
+		    				"は、同一でした。");
+					continue;
+				}
+				CMerge.compare(
+						linesColor,
+						linesB, listDiff, CMerge.Y_COL);
+				printMsg("ベース・ファイルとＹファイルを比較しました。");
+				D.dprint(linesColor);
+				String strColored = String.join("<br>", linesColor);
+				D.dprint(strColored);
+				wvMerge.getEngine().loadContent(strColored);
+
+	        	String strFileZ = strFolderMerge + "\\"
+	        			+ strBaseFile;
+		    	Path path1 = Paths.get(strFileZ); //パス
+		    	try (BufferedWriter bw = Files.newBufferedWriter(
+		    			path1, StandardCharsets.UTF_8);
+		              PrintWriter pw = new PrintWriter(bw, true)) {
+		    		Iterator<String> iter = linesColor.iterator();
+		    		while (iter.hasNext()) {
+		    			pw.println(iter.next());
+		    		}
+		    	} catch (IOException e) {
+		    		printMsg(strBaseFile +
+		    				"は、保存できませんでした。");
+					continue;
+		    	}
+		    	printMsg(strBaseFile +
+		    			"は、比較ファイルとしてマージ・フォルダに保存しました。");
+	        }
+	        // Yのみにあるファイル
+	        for (String strY:setY) {
+	        	if (! setBase.contains(strY)) {
+        			printMsg(strY +
+        					"はベース・フォルダにありません。");
+	        	}
+	        }
     	}
-		String strFileBase = tfBase.getText();
-		D.dprint(strFileBase);
-	    List<String> linesB = null;
-		try {
-			linesB = Files.readAllLines(
-					FileSystems.getDefault().getPath(strFileBase),
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			printMsg("ベース・ファイル" + strFileBase + "が読めません。");
-			return;
-		}
-		String strFileY = tfY.getText();
-		D.dprint(strFileY);
-	    List<String> linesY = null;
-		try {
-			linesY = Files.readAllLines(
-					FileSystems.getDefault().getPath(strFileY),
-					Charset.defaultCharset());
-		} catch (IOException e) {
-			printMsg("Ｙファイル" + strFileY + "が読めません。");
-			return;
-		}
-
-		List<DiffLine> listDiff = CMerge.createDiffList(
-				linesB, linesY);
-		List<String> linesColor = new ArrayList<String>();
-
-		CMerge.compare(
-				linesColor,
-				linesB, listDiff, CMerge.Y_COL);
-		printMsg("ベース・ファイルとＹファイルを比較しました。");
-		D.dprint(linesColor);
-		String strColored = String.join("<br>", linesColor);
-		D.dprint(strColored);
-		wvMerge.getEngine().loadContent(strColored);
     }
 
     @FXML
@@ -804,7 +909,7 @@ public class Controller {
 		            	strFileBase = f.getName();
 		            	String strFile = strFileBase.
 		            			replaceAll(strJogaiBase, "");
-		            	if (strFile == strBaseFile) {
+		            	if (strFile.equals(strBaseFile)) {
 		            		break;
 		            	}
 		            }
@@ -817,7 +922,7 @@ public class Controller {
 		            	strFileX = f.getName();
 		            	String strFile = strFileX.
 		            			replaceAll(strJogaiX, "");
-		            	if (strFile == strBaseFile) {
+		            	if (strFile.equals(strBaseFile)) {
 		            		break;
 		            	}
 		            }
@@ -830,7 +935,7 @@ public class Controller {
 		            	strFileY = f.getName();
 		            	String strFile = strFileY.
 		            			replaceAll(strJogaiY, "");
-		            	if (strFile == strBaseFile) {
+		            	if (strFile.equals(strBaseFile)) {
 		            		break;
 		            	}
 		            }
@@ -845,7 +950,7 @@ public class Controller {
 							Charset.defaultCharset());
 				} catch (IOException e) {
 					printMsg("ベース・ファイル" + strFileBase + "が読めません。");
-					return;
+					continue;
 				}
 			    List<String> linesX = null;
 				try {
@@ -855,7 +960,7 @@ public class Controller {
 							Charset.defaultCharset());
 				} catch (IOException e) {
 					printMsg("Ｘファイル" + strFileX + "が読めません。");
-					return;
+					continue;
 				}
 				List<String> linesY = null;
 				try {
@@ -865,7 +970,7 @@ public class Controller {
 							Charset.defaultCharset());
 				} catch (IOException e) {
 					printMsg("Ｙファイル" + strFileY + "が読めません。");
-					return;
+					continue;
 				}
 
 				List<DiffLine> listDiffX =
@@ -912,7 +1017,7 @@ public class Controller {
 		    	} catch (IOException e) {
 		    		printMsg(strBaseFile +
 		    				"は、保存できませんでした。");
-		    		return;
+					continue;
 		    	}
 		    	printMsg(strBaseFile +
 		    			"は、マージ・ファイルに保存しました。");
