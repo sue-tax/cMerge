@@ -27,6 +27,135 @@ public class CMerge {
 	static final String DEL_END = "</del>";
 
 
+	public static void compare(
+			List<String> linesColor,
+			List<String> linesBase,
+			List<DiffLine> listDiff,
+			String strCol) {
+		D.dprint_method_start();
+		int positionB = 0;
+		Iterator<DiffLine> iterDiff = listDiff.iterator();
+		DiffLine diffLine;
+		// mergeから派生させたため、ループ条件が変
+//		if (iterDiff.hasNext()) {
+//			diffLine = iterDiff.next();
+//		} else {
+//			diffLine = null;
+//		}
+//		while (diffLine != null) {
+		while (iterDiff.hasNext()) {
+			D.dprint("compare while Loop");
+			diffLine = iterDiff.next();
+			int mode = diffLine.getMode();
+			if (positionB < diffLine.getPosition()) {
+				for (int i = positionB; i < Integer.min(
+						diffLine.getPosition(),
+						linesBase.size()); i++) {
+					//				linesZ.add(linesBase.get(i));
+					linesColor.add(linesBase.get(i));
+				}
+				positionB = diffLine.getPosition();
+			}
+			if (mode == DiffLine.MODE_INSERT) {
+//				linesZ.add(diffX.getRevised());
+				linesColor.add(strCol +
+						diffLine.getRevised()
+						+ COL_END);
+			} else if (mode == DiffLine.MODE_DELETE) {
+				linesColor.add(strCol +
+						DEL_START +
+						diffLine.getOriginal()
+						+ DEL_END
+						+ COL_END);
+				positionB += 1;
+			} else {
+				assert(mode==DiffLine.MODE_CHANGE);
+				D.dprint(positionB);
+				D.dprint(diffLine);
+				compareChangeChar(
+					strCol, linesColor,
+					linesBase.get(positionB),
+					diffLine.getListDiffChar());
+
+				positionB += 1;
+			}
+//			if (iterDiff.hasNext()) {
+//				diffLine = iterDiff.next();
+//			}
+			D.dprint(positionB);
+		}
+		for (int i=positionB; i<linesBase.size(); i++) {
+//			linesZ.add(linesBase.get(i));
+			linesColor.add(linesBase.get(i));
+		}
+		D.dprint_method_end();
+		return;
+	}
+
+	// 行の単独CHANGEがあったときの各文字の処理
+	private static void compareChangeChar(
+			String strColor, List<String> linesColor,
+			String strBase,
+			List<DiffChar> listDiff) {
+		D.dprint_method_start();
+		D.dprint(strBase);
+		D.dprint(listDiff);
+//		StringBuffer sb = new StringBuffer();
+		StringBuffer sbC = new StringBuffer();
+		int positionB = 0;
+		Iterator<DiffChar> iter = listDiff.iterator();
+		while (iter.hasNext()) {
+			DiffChar diff = iter.next();
+			D.dprint(diff);
+			D.dprint(positionB);
+			D.dprint(diff.getPosition());
+			if (positionB < diff.getPosition()) {
+				for (int i=positionB;
+						i<diff.getPosition(); i++) {
+//					sb.append(strBase.charAt(i));
+					sbC.append(strBase.charAt(i));
+				}
+				positionB = diff.getPosition() ;
+//				positionB = diff.getPosition() - 1;
+			}
+			int mode = diff.getMode();
+			if (mode == DiffChar.MODE_INSERT) {
+//				sb.append(diff.getRevised());
+				sbC.append(strColor);
+				sbC.append(diff.getRevised());
+				sbC.append(COL_END);
+			} else if (mode == DiffChar.MODE_DELETE) {
+				sbC.append(strColor);
+				sbC.append(DEL_START);
+				sbC.append(diff.getOriginal());
+				sbC.append(DEL_END);
+				sbC.append(COL_END);
+				positionB += 1;
+			} else {
+//				sb.append(diff.getRevised());
+				sbC.append(strColor);
+				sbC.append(DEL_START);
+				sbC.append(diff.getOriginal());
+				sbC.append(DEL_END);
+				sbC.append(diff.getRevised());
+				sbC.append(COL_END);
+				positionB += 1;
+			}
+			D.dprint(positionB);
+		}
+		for (int i=positionB; i<strBase.length(); i++) {
+//			sb.append(strBase.charAt(i));
+			sbC.append(strBase.charAt(i));
+		}
+//		String strZ = sb.toString();
+//		linesZ.add(strZ);
+		String strC = sbC.toString();
+		linesColor.add(strC);
+		D.dprint_method_end();
+		return;
+	}
+
+
 	// 文字でのコンフリクトの表示文字列
 	private static String displayConflictChar(
 			DiffChar diffX, DiffChar diffY) {

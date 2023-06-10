@@ -9,18 +9,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="583.0" prefWidth="549.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<AnchorPane prefHeight="583.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
-      <TextField fx:id="tfBase" layoutX="50.0" layoutY="21.0" minWidth="50.0" onDragDropped="#onDragDroppedBase" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="20.0" />
-      <Button fx:id="buttonBase" layoutX="219.0" layoutY="21.0" mnemonicParsing="false" onAction="#onBase" text="指定" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="20.0" />
-      <TextField fx:id="tfX" layoutX="50.0" layoutY="55.0" onDragDropped="#onDragDroppedX" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="60.0" />
-      <Button fx:id="buttonX" layoutX="219.0" layoutY="55.0" mnemonicParsing="false" onAction="#onX" text="指定" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="60.0" />
-      <TextField fx:id="tfY" layoutX="50.0" layoutY="95.0" onDragDropped="#onDragDroppedY" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="100.0" />
-      <Button fx:id="buttonY" layoutX="219.0" layoutY="95.0" mnemonicParsing="false" onAction="#onY" text="指定" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="100.0" />
-      <TextField fx:id="tfMerge" layoutX="50.0" layoutY="136.0" onDragDropped="#onDragDroppedMerge" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="140.0" />
-      <Button fx:id="buttonZ" layoutX="219.0" layoutY="136.0" mnemonicParsing="false" onAction="#onZ" text="指定" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="140.0" />
-      <Button fx:id="buttonSave" layoutX="426.0" layoutY="136.0" mnemonicParsing="false" onAction="#onSaveAction" text="保存" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="140.0" />
-      <Button fx:id="buttonMerge" layoutX="485.0" layoutY="136.0" mnemonicParsing="false" onAction="#onMerge" text="マージ" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="140.0" />
+      <TextField fx:id="tfBase" layoutX="50.0" layoutY="21.0" minWidth="50.0" onDragDropped="#onDragDroppedBase" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="20.0" />
+      <Button fx:id="buttonBase" layoutX="219.0" layoutY="21.0" mnemonicParsing="false" onAction="#onBase" text="指定" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="20.0" />
+      <TextField fx:id="tfX" layoutX="50.0" layoutY="55.0" onDragDropped="#onDragDroppedX" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="60.0" />
+      <Button fx:id="buttonX" layoutX="219.0" layoutY="55.0" mnemonicParsing="false" onAction="#onX" text="指定" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="60.0" />
+      <TextField fx:id="tfY" layoutX="50.0" layoutY="95.0" onDragDropped="#onDragDroppedY" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="100.0" />
+      <Button fx:id="buttonY" layoutX="219.0" layoutY="95.0" mnemonicParsing="false" onAction="#onY" text="指定" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="100.0" />
+      <TextField fx:id="tfMerge" layoutX="50.0" layoutY="136.0" onDragDropped="#onDragDroppedMerge" onDragOver="#onDragOver" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="140.0" />
+      <Button fx:id="buttonZ" layoutX="219.0" layoutY="136.0" mnemonicParsing="false" onAction="#onZ" text="指定" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="140.0" />
+      <Button fx:id="buttonSave" layoutX="426.0" layoutY="136.0" mnemonicParsing="false" onAction="#onSaveAction" text="保 存" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="140.0" />
+      <Button fx:id="buttonMerge" layoutX="565.0" layoutY="20.0" mnemonicParsing="false" onAction="#onMerge" text="マージ" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="20.0" />
       <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="50.0" layoutY="185.0" prefHeight="310.0" prefWidth="509.0" AnchorPane.bottomAnchor="93.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="180.0">
          <content>
             <WebView fx:id="wvMerge" minHeight="-1.0" minWidth="-1.0" prefHeight="309.0" prefWidth="507.0" />
@@ -35,7 +35,12 @@
       <Label layoutX="20.0" layoutY="64.0" text="ファイルＸ" />
       <Label layoutX="20.0" layoutY="104.0" text="ファイルＹ" />
       <Label layoutX="20.0" layoutY="144.0" text="マージ・ファイル" />
-      <RadioButton fx:id="rbFolder" layoutX="436.0" layoutY="24.0" mnemonicParsing="false" text="フォルダ指定" />
+      <RadioButton fx:id="rbFolder" layoutX="626.0" layoutY="144.0" mnemonicParsing="false" text="フォルダ指定" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="140.0" />
       <TextArea fx:id="taMsg" editable="false" layoutX="20.0" layoutY="500.0" prefHeight="73.0" prefWidth="509.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+      <Button fx:id="buttonCompareX" layoutX="552.0" layoutY="60.0" mnemonicParsing="false" onAction="#onCompareX" text="比較X" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="60.0" />
+      <Button fx:id="buttonCompareY" layoutX="552.0" layoutY="100.0" mnemonicParsing="false" onAction="#onCompareY" text="比較Y" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="100.0" />
+      <TextField fx:id="tfJogaiBase" layoutX="607.0" layoutY="20.0" prefHeight="25.0" prefWidth="107.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+      <TextField fx:id="tfJogaiX" layoutX="611.0" layoutY="60.0" prefHeight="25.0" prefWidth="107.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="60.0" />
+      <TextField fx:id="tfJogaiY" layoutX="611.0" layoutY="100.0" prefHeight="25.0" prefWidth="107.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0" />
    </children>
 </AnchorPane>

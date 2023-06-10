@@ -69,6 +69,12 @@ public class Controller {
     @FXML // fx:id="buttonMerge"
     private Button buttonMerge; // Value injected by FXMLLoader
 
+    @FXML // fx:id="buttonCompareX"
+    private Button buttonCompareX; // Value injected by FXMLLoader
+
+    @FXML // fx:id="buttonCompareY"
+    private Button buttonCompareY; // Value injected by FXMLLoader
+
     @FXML // fx:id="textAreaConflict"
     private TextArea textAreaConflict; // Value injected by FXMLLoader
 
@@ -86,6 +92,15 @@ public class Controller {
 
     @FXML // fx:id="tfY"
     private TextField tfY; // Value injected by FXMLLoader
+
+    @FXML // fx:id="tfJogaiBase"
+    private TextField tfJogaiBase; // Value injected by FXMLLoader
+
+    @FXML // fx:id="tfJogaiX"
+    private TextField tfJogaiX; // Value injected by FXMLLoader
+
+    @FXML // fx:id="tfJogaiY"
+    private TextField tfJogaiY; // Value injected by FXMLLoader
 
     @FXML // fx:id="wvMerge"
     private WebView wvMerge; // Value injected by FXMLLoader
@@ -379,6 +394,96 @@ public class Controller {
     }
 
     @FXML
+    void onCompareX(ActionEvent event) {
+    	D.dprint_method_start();
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (flagFolder) {
+    		printMsg("フォルダ指定の比較はできません。");
+    		return;
+    	}
+		String strFileBase = tfBase.getText();
+		D.dprint(strFileBase);
+	    List<String> linesB = null;
+		try {
+			linesB = Files.readAllLines(
+					FileSystems.getDefault().getPath(strFileBase),
+					Charset.defaultCharset());
+		} catch (IOException e) {
+			printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+			return;
+		}
+		String strFileX = tfX.getText();
+		D.dprint(strFileX);
+	    List<String> linesX = null;
+		try {
+			linesX = Files.readAllLines(
+					FileSystems.getDefault().getPath(strFileX),
+					Charset.defaultCharset());
+		} catch (IOException e) {
+			printMsg("Ｘファイル" + strFileX + "が読めません。");
+			return;
+		}
+
+		List<DiffLine> listDiff = CMerge.createDiffList(
+				linesB, linesX);
+		List<String> linesColor = new ArrayList<String>();
+
+		CMerge.compare(
+				linesColor,
+				linesB, listDiff, CMerge.X_COL);
+		printMsg("ベース・ファイルとＸファイルを比較しました。");
+		D.dprint(linesColor);
+		String strColored = String.join("<br>", linesColor);
+		D.dprint(strColored);
+		wvMerge.getEngine().loadContent(strColored);
+    }
+
+    @FXML
+    void onCompareY(ActionEvent event) {
+    	D.dprint_method_start();
+    	Boolean flagFolder = rbFolder.isSelected();
+    	if (flagFolder) {
+    		printMsg("フォルダ指定の比較はできません。");
+    		return;
+    	}
+		String strFileBase = tfBase.getText();
+		D.dprint(strFileBase);
+	    List<String> linesB = null;
+		try {
+			linesB = Files.readAllLines(
+					FileSystems.getDefault().getPath(strFileBase),
+					Charset.defaultCharset());
+		} catch (IOException e) {
+			printMsg("ベース・ファイル" + strFileBase + "が読めません。");
+			return;
+		}
+		String strFileY = tfY.getText();
+		D.dprint(strFileY);
+	    List<String> linesY = null;
+		try {
+			linesY = Files.readAllLines(
+					FileSystems.getDefault().getPath(strFileY),
+					Charset.defaultCharset());
+		} catch (IOException e) {
+			printMsg("Ｙファイル" + strFileY + "が読めません。");
+			return;
+		}
+
+		List<DiffLine> listDiff = CMerge.createDiffList(
+				linesB, linesY);
+		List<String> linesColor = new ArrayList<String>();
+
+		CMerge.compare(
+				linesColor,
+				linesB, listDiff, CMerge.Y_COL);
+		printMsg("ベース・ファイルとＹファイルを比較しました。");
+		D.dprint(linesColor);
+		String strColored = String.join("<br>", linesColor);
+		D.dprint(strColored);
+		wvMerge.getEngine().loadContent(strColored);
+    }
+
+    @FXML
     void onMerge(ActionEvent event) {
     	Boolean flagFolder = rbFolder.isSelected();
     	if (! flagFolder) {
@@ -432,6 +537,7 @@ public class Controller {
 			D.dprint(flag);
 			if (flag) {
 				printMsg("コンフリクトなしでマージしました。");
+				printMsg("保存は、まだしていません。");
 			} else {
 				printMsg("コンフリクトが発生しました。");
 			}
@@ -463,28 +569,38 @@ public class Controller {
 				printMsg("マージ・フォルダが指定されていません。");
 			}
 
+			String strJogaiBase = tfJogaiBase.getText();
+			D.dprint(strJogaiBase);
 			File folderBase = new File(strFolderBase);
 			File fileBaseArray[] = folderBase.listFiles();
 			Set<String> setBase = new HashSet<String>();
 	        for (File f: fileBaseArray){
 	            if(f.isFile()) {
-	            	setBase.add(f.getName());
+	            	String strFile = f.getName().
+	            			replaceAll(strJogaiBase, "");
+	            	setBase.add(strFile);
 	            }
 	        }
+			String strJogaiX = tfJogaiX.getText();
 			File folderX = new File(strFolderX);
 			File fileXArray[] = folderX.listFiles();
 			Set<String> setX = new HashSet<String>();
 	        for (File f: fileXArray){
 	            if(f.isFile()) {
-	            	setX.add(f.getName());
+	            	String strFile = f.getName().
+	            			replaceAll(strJogaiX, "");
+	            	setX.add(strFile);
 	            }
 	        }
+			String strJogaiY = tfJogaiY.getText();
 			File folderY = new File(strFolderY);
 			File fileYArray[] = folderY.listFiles();
 			Set<String> setY = new HashSet<String>();
 	        for (File f: fileYArray){
 	            if(f.isFile()) {
-	            	setY.add(f.getName());
+	            	String strFile = f.getName().
+	            			replaceAll(strJogaiY, "");
+	            	setY.add(strFile);
 	            }
 	        }
 	        for (String strBaseFile:setBase) {
@@ -503,12 +619,45 @@ public class Controller {
 	        		continue;
 	        	}
 
-	        	String strFileBase = strFolderBase + "\\"
-	        			+ strBaseFile;
-	        	String strFileX = strFolderX + "\\"
-	        			+ strBaseFile;
-	        	String strFileY = strFolderY + "\\"
-	        			+ strBaseFile;
+		        String strFileBase = "";
+	        	for (File f: fileBaseArray){
+		            if(f.isFile()) {
+		            	strFileBase = f.getName();
+		            	String strFile = strFileBase.
+		            			replaceAll(strJogaiBase, "");
+		            	if (strFile == strBaseFile) {
+		            		break;
+		            	}
+		            }
+		        }
+	        	strFileBase = strFolderBase + "\\"
+	        			+ strFileBase;
+		        String strFileX = "";
+	        	for (File f: fileXArray){
+		            if(f.isFile()) {
+		            	strFileX = f.getName();
+		            	String strFile = strFileX.
+		            			replaceAll(strJogaiX, "");
+		            	if (strFile == strBaseFile) {
+		            		break;
+		            	}
+		            }
+		        }
+	        	strFileX = strFolderX + "\\"
+	        			+ strFileX;
+		        String strFileY = "";
+	        	for (File f: fileYArray){
+		            if(f.isFile()) {
+		            	strFileY = f.getName();
+		            	String strFile = strFileY.
+		            			replaceAll(strJogaiY, "");
+		            	if (strFile == strBaseFile) {
+		            		break;
+		            	}
+		            }
+		        }
+	        	strFileY = strFolderY + "\\"
+	        			+ strFileY;
 				List<String> linesB = null;
 				try {
 					linesB = Files.readAllLines(
@@ -777,6 +926,9 @@ public class Controller {
 //        assert tfMsg != null : "fx:id=\"tfMsg\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfX != null : "fx:id=\"tfX\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfY != null : "fx:id=\"tfY\" was not injected: check your FXML file 'cMerge.fxml'.";
+        assert tfJogaiBase != null : "fx:id=\"tfJogaiBase\" was not injected: check your FXML file 'cMerge.fxml'.";
+        assert tfJogaiX != null : "fx:id=\"tfJogaiX\" was not injected: check your FXML file 'cMerge.fxml'.";
+        assert tfJogaiY != null : "fx:id=\"tfJogaiY\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert wvMerge != null : "fx:id=\"wvMerge\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert rbFolder != null : "fx:id=\"rbFolder\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert taMsg != null : "fx:id=\"taMsg\" was not injected: check your FXML file 'cMerge.fxml'.";

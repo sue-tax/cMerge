@@ -4,6 +4,7 @@ module cMergeWin {
 	requires javafx.web;
 	requires diffj;
 	requires diffutils;
+	requires javafx.graphics;
 	
 	opens application to javafx.graphics, javafx.fxml;
 }

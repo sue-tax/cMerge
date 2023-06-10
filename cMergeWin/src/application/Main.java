@@ -8,7 +8,12 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application {
-	static final float VERSION = 0.13f;
+//	public static final float VERSION = 0.13f;
+	// フォルダ指定を可能にする
+//	public static final float VERSION = 0.20f;
+	// 比較機能の追加、ファイル名の除外文字列の対応
+	public static final float VERSION = 0.21f;
+	// TODO 比較機能のフォルダ指定（保存をどうするか？）
 
 	public static Stage stage;
 
