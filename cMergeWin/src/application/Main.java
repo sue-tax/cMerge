@@ -12,8 +12,9 @@ public class Main extends Application {
 	// フォルダ指定を可能にする
 //	public static final float VERSION = 0.20f;
 	// 比較機能の追加、ファイル名の除外文字列の対応
-	public static final float VERSION = 0.21f;
-	// TODO 比較機能のフォルダ指定（保存をどうするか？）
+//	public static final float VERSION = 0.21f;
+	// 比較機能のフォルダ指定（カラーを保存）
+	public static final float VERSION = 0.22f;
 
 	public static Stage stage;
 
