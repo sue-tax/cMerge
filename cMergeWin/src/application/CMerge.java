@@ -15,7 +15,9 @@ import difflib.Patch;
 public class CMerge {
 //	public static final float VERSION = 0.13f;
 	// フォルダ指定を可能にする
-	public static final float VERSION = 0.20f;
+//	public static final float VERSION = 0.20f;
+	// スクロールペインを導入
+//	public static final float VERSION = 0.21f;
 
 	static final String X_COL = "<font color=\"blue\">";
 	static final String Y_COL = "<font color=\"green\">";

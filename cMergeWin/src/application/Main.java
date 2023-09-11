@@ -16,7 +16,9 @@ public class Main extends Application {
 	// 比較機能のフォルダ指定（カラーを保存）
 //	public static final float VERSION = 0.22f;
 	// 除外指定の有無で処理を変更
-	public static final float VERSION = 0.23f;
+//	public static final float VERSION = 0.23f;
+	// メッセージエリアをスクロールペインに
+	public static final float VERSION = 0.24f;
 
 	public static Stage stage;
 

@@ -75,8 +75,8 @@ public class Controller {
     @FXML // fx:id="buttonCompareY"
     private Button buttonCompareY; // Value injected by FXMLLoader
 
-    @FXML // fx:id="textAreaConflict"
-    private TextArea textAreaConflict; // Value injected by FXMLLoader
+//    @FXML // fx:id="textAreaConflict"
+//    private TextArea textAreaConflict; // Value injected by FXMLLoader
 
     @FXML // fx:id="tfBase"
     private TextField tfBase; // Value injected by FXMLLoader
@@ -472,6 +472,7 @@ public class Controller {
 	            	setX.add(strFile);
 	            }
 	        }
+//	        System.out.println("リストアップ終了");
 	        for (String strBaseFile:setBase) {
 	        	if (! setX.contains(strBaseFile)) {
         			printMsg(strBaseFile +
@@ -541,6 +542,8 @@ public class Controller {
 				if (listDiff.size() == 0) {
 		    		D.dprint(strBaseFile +
 		    				"は、同一でした。");
+//		    		System.out.println(strBaseFile +
+//		    				"は、同一でした。");
 		    		printMsg(strBaseFile +
 		    				"は、同一でした。");
 					continue;
@@ -1207,7 +1210,7 @@ public class Controller {
         assert buttonZ != null : "fx:id=\"buttonZ\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert buttonSave != null : "fx:id=\"buttonSave\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert buttonMerge != null : "fx:id=\"buttonMerge\" was not injected: check your FXML file 'cMerge.fxml'.";
-        assert textAreaConflict != null : "fx:id=\"textAreaConflict\" was not injected: check your FXML file 'cMerge.fxml'.";
+//        assert textAreaConflict != null : "fx:id=\"textAreaConflict\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfBase != null : "fx:id=\"tfBase\" was not injected: check your FXML file 'cMerge.fxml'.";
         assert tfMerge != null : "fx:id=\"tfMerge\" was not injected: check your FXML file 'cMerge.fxml'.";
 //        assert tfMsg != null : "fx:id=\"tfMsg\" was not injected: check your FXML file 'cMerge.fxml'.";
